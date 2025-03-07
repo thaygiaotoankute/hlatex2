@@ -16,6 +16,20 @@
             text-align: center;
             margin-bottom: 20px;
         }
+        .user-info {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        .user-info span {
+            margin-right: 10px;
+        }
+        .user-info a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .user-info a:hover {
+            text-decoration: underline;
+        }
         .container {
             display: flex;
             flex-wrap: wrap;
@@ -48,7 +62,7 @@
         .feature-button:hover {
             background-color: #45a049;
         }
-        #registration-status {
+        #activation-status {
             text-align: center;
             margin: 20px 0;
             padding: 10px;
@@ -61,7 +75,19 @@
         <p>Công cụ hỗ trợ LaTeX</p>
     </div>
 
-    <div id="registration-status"></div>
+    <div class="user-info">
+        <span>Xin chào, <strong>{{ session.username }}</strong></span>
+        <a href="/activation_status">Trạng thái kích hoạt</a> | 
+        <a href="/logout">Đăng xuất</a>
+    </div>
+
+    <div id="activation-status">
+        {% if session.activation_status == "ĐÃ KÍCH HOẠT" %}
+        <p style="color: green; font-weight: bold;">Trạng thái kích hoạt: ĐÃ KÍCH HOẠT</p>
+        {% else %}
+        <p style="color: red; font-weight: bold;">Trạng thái kích hoạt: CHƯA KÍCH HOẠT</p>
+        {% endif %}
+    </div>
 
     <div class="container">
         <div class="feature">
@@ -93,31 +119,6 @@
             <p>Tạo mẫu hình không gian.</p>
             <a href="/hkg" class="feature-button">Mẫu hình không gian</a>
         </div>
-
-        <div class="feature">
-            <div class="feature-title">Đăng kí bản quyền</div>
-            <p>Đăng kí bản quyền để sử dụng đầy đủ tính năng.</p>
-            <a href="/register" class="feature-button">Đăng kí bản quyền</a>
-        </div>
     </div>
-
-    <script>
-        // Check registration status when page loads
-        window.onload = function() {
-            fetch('/check_registration')
-                .then(response => response.json())
-                .then(data => {
-                    const statusDiv = document.getElementById('registration-status');
-                    if (data.is_registered) {
-                        statusDiv.innerHTML = '<p style="color: green; font-weight: bold;">Trạng thái đăng kí: Đã đăng kí</p>';
-                    } else {
-                        statusDiv.innerHTML = '<p style="color: red; font-weight: bold;">Trạng thái đăng kí: Chưa đăng kí</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        };
-    </script>
 </body>
 </html>
