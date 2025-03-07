@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H_Latex</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .feature {
+            flex: 1;
+            min-width: 300px;
+            margin: 10px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .feature-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .feature-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        .feature-button:hover {
+            background-color: #45a049;
+        }
+        #registration-status {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>H_Latex</h1>
+        <p>Công cụ hỗ trợ LaTeX</p>
+    </div>
+
+    <div id="registration-status"></div>
+
+    <div class="container">
+        <div class="feature">
+            <div class="feature-title">Chuyển dữ liệu</div>
+            <p>Công cụ chuyển đổi dữ liệu LaTeX.</p>
+            <a href="/convert_ex" class="feature-button">Chuyển ex</a>
+            <a href="/convert_extf" class="feature-button">Chuyển ex Đúng/Sai</a>
+            <a href="/convert_bt" class="feature-button">Chuyển bt</a>
+            <a href="/convert_vd" class="feature-button">Chuyển vd</a>
+            <a href="/add_true" class="feature-button">Thêm lệnh \True</a>
+        </div>
+
+        <div class="feature">
+            <div class="feature-title">Bảng biến thiên</div>
+            <p>Tạo bảng biến thiên cho các hàm số.</p>
+            <a href="/bbt_auto" class="feature-button">Bảng biến thiên tự động</a>
+            <a href="/bbt_manual" class="feature-button">Bảng biến thiên thủ công</a>
+        </div>
+
+        <div class="feature">
+            <div class="feature-title">Đồ thị</div>
+            <p>Tạo đồ thị các hàm số.</p>
+            <a href="/graph_standard" class="feature-button">Đồ thị các hàm thường gặp</a>
+            <a href="/graph_custom" class="feature-button">Đồ thị hàm tuỳ ý</a>
+        </div>
+
+        <div class="feature">
+            <div class="feature-title">Mẫu hình không gian</div>
+            <p>Tạo mẫu hình không gian.</p>
+            <a href="/hkg" class="feature-button">Mẫu hình không gian</a>
+        </div>
+
+        <div class="feature">
+            <div class="feature-title">Đăng kí bản quyền</div>
+            <p>Đăng kí bản quyền để sử dụng đầy đủ tính năng.</p>
+            <a href="/register" class="feature-button">Đăng kí bản quyền</a>
+        </div>
+    </div>
+
+    <script>
+        // Check registration status when page loads
+        window.onload = function() {
+            fetch('/check_registration')
+                .then(response => response.json())
+                .then(data => {
+                    const statusDiv = document.getElementById('registration-status');
+                    if (data.is_registered) {
+                        statusDiv.innerHTML = '<p style="color: green; font-weight: bold;">Trạng thái đăng kí: Đã đăng kí</p>';
+                    } else {
+                        statusDiv.innerHTML = '<p style="color: red; font-weight: bold;">Trạng thái đăng kí: Chưa đăng kí</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        };
+    </script>
+</body>
+</html>
