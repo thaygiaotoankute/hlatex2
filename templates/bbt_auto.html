@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Biến Thiên Tự Động - H_Latex</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>Bảng Biến Thiên Tự Động</h1>
+        <p>H_Latex</p>
+    </div>
+
+    <div class="container">
+        <div class="function-selector">
+            <h2>Chọn loại hàm số</h2>
+            <select id="function-type">
+                <option value="bac_nhat">Hàm bậc nhất (y = ax + b)</option>
+                <option value="bac_hai">Hàm bậc hai (y = ax² + bx + c)</option>
+                <option value="bac_ba">Hàm bậc ba (y = ax³ + bx² + cx + d)</option>
+                <option value="trung_phuong">Hàm trùng phương (y = ax⁴ + bx² + c)</option>
+                <option value="mot_mot">Hàm phân thức (y = (ax+b)/(cx+d))</option>
+                <option value="hai_mot">Hàm phân thức (y = (ax²+bx+c)/(mx+n))</option>
+            </select>
+        </div>
+
+        <!-- Hàm bậc nhất -->
+        <div id="bac_nhat" class="function-form">
+            <h3>Hàm bậc nhất (y = ax + b)</h3>
+            <div class="form-group">
+                <label for="bac_nhat_a">a = </label>
+                <input type="text" id="bac_nhat_a" value="1">
+            </div>
+            <div class="form-group">
+                <label for="bac_nhat_b">b = </label>
+                <input type="text" id="bac_nhat_b" value="0">
+            </div>
+            <button id="generate-bac-nhat">Xuất code</button>
+        </div>
+
+        <!-- Hàm bậc hai -->
+        <div id="bac_hai" class="function-form" style="display: none;">
+            <h3>Hàm bậc hai (y = ax² + bx + c)</h3>
+            <div class="form-group">
+                <label for="bac_hai_a">a = </label>
+                <input type="text" id="bac_hai_a" value="1">
+            </div>
+            <div class="form-group">
+                <label for="bac_hai_b">b = </label>
+                <input type="text" id="bac_hai_b" value="0">
+            </div>
+            <div class="form-group">
+                <label for="bac_hai_c">c = </label>
+                <input type="text" id="bac_hai_c" value="0">
+            </div>
+            <button id="generate-bac-hai">Xuất code</button>
+        </div>
+
+        <!-- Hàm bậc ba -->
+        <div id="bac_ba" class="function-form" style="display: none;">
+            <h3>Hàm bậc ba (y = ax³ + bx² + cx + d)</h3>
+            <div class="form-group">
+                <label for="bac_ba_a">a = </label>
+                <input type="text" id="bac_ba_a" value="1">
+            </div>
+            <div class="form-group">
+                <label for="bac_ba_b">b = </label>
+                <input type="text" id="bac_ba_b" value="0">
+            </div>
+            <div class="form-group">
+                <label for="bac_ba_c">c = </label>
+                <input type="text" id="bac_ba_c" value="0">
+            </div>
+            <div class="form-group">
+                <label for="bac_ba_d">d = </label>
+                <input type="text" id="bac_ba_d" value="0">
+            </div>
+            <button id="generate-bac-ba">Xuất code</button>
+        </div>
+
+        <!-- Hàm trùng phương -->
+        <div id="trung_phuong" class="function-form" style="display: none;">
+            <h3>Hàm trùng phương (y = ax⁴ + bx² + c)</h3>
+            <div class="form-group">
+                <label for="trung_phuong_a">a = </label>
+                <input type="text" id="trung_phuong_a" value="1">
+            </div>
+            <div class="form-group">
+                <label for="trung_phuong_b">b = </label>
+                <input type="text" id="trung_phuong_b" value="0">
+            </div>
+            <div class="form-group">
+                <label for="trung_phuong_c">c = </label>
+                <input type="text" id="trung_phuong_c" value="0">
+            </div>
+            <button id="generate-trung-phuong">Xuất code</button>
+        </div>
+
+        <!-- Hàm phân thức (1/1) -->
+        <div id="mot_mot" class="function-form" style="display: none;">
+            <h3>Hàm phân thức (y = (ax+b)/(cx+d))</h3>
+            <div class="form-group">
+                <label for="mot_mot_a">a = </label>
+                <input type="text" id="mot_mot_a" value="1">
+            </div>
+            <div class="form-group">
+                <label for="mot_mot_b">b = </label>
+                <input type="text" id="mot_mot_b" value="0">
+            </div>
+            <div class="form-group">
+                <label for="mot_mot_c">c = </label>
+                <input type="text" id="mot_mot_c" value="1">
+            </div>
+            <div class="form-group">
+                <label for="mot_mot_d">d = </label>
+                <input type="text" id="mot_mot_d" value="0">
+            </div>
+            <button id="generate-mot-mot">Xuất code</button>
+        </div>
+
+        <!-- Hàm phân thức (2/1) -->
+        <div id="hai_mot" class="function-form" style="display: none;">
+            <h3>Hàm phân thức (y = (ax²+bx+c)/(mx+n))</h3>
+            <div class="form-group">
+                <label for="hai_mot_a">a = </label>
+                <input type="text" id="hai_mot_a" value="1">
+            </div>
+            <div class="form-group">
+                <label for="hai_mot_b">b = </label>
+                <input type="text" id="hai_mot_b" value="0">
+            </div>
+            <div class="form-group">
+                <label for="hai_mot_c">c = </label>
+                <input type="text" id="hai_mot_c" value="0">
+            </div>
+            <div class="form-group">
+                <label for="hai_mot_m">m = </label>
+                <input type="text" id="hai_mot_m" value="1">
+            </div>
+            <div class="form-group">
+                <label for="hai_mot_n">n = </label>
+                <input type="text" id="hai_mot_n" value="0">
+            </div>
+            <button id="generate-hai-mot">Xuất code</button>
+        </div>
+
+        <div id="result" class="result-container">
+            <h3>Kết quả</h3>
+            <div id="function-display"></div>
+            <div id="latex-display" class="latex-preview"></div>
+            <pre id="latex-code" class="code-box"></pre>
+            <button id="copy-button" class="action-button" style="display: none;">Copy code</button>
+        </div>
+    </div>
+
+    <a href="/" class="back-link">Quay lại trang chính</a>
+
+    <script>
+        // Show/hide function forms based on selection
+        document.getElementById('function-type').addEventListener('change', function() {
+            // Hide all forms
+            document.querySelectorAll('.function-form').forEach(form => {
+                form.style.display = 'none';
+            });
+            
+            // Show selected form
+            document.getElementById(this.value).style.display = 'block';
+        });
+
+        // Handle bac_nhat form submission
+        document.getElementById('generate-bac-nhat').addEventListener('click', function() {
+            const a = document.getElementById('bac_nhat_a').value;
+            const b = document.getElementById('bac_nhat_b').value;
+            
+            fetchAndDisplayResult('bac_nhat', { a, b });
+        });
+
+        // Handle bac_hai form submission
+        document.getElementById('generate-bac-hai').addEventListener('click', function() {
+            const a = document.getElementById('bac_hai_a').value;
+            const b = document.getElementById('bac_hai_b').value;
+            const c = document.getElementById('bac_hai_c').value;
+            
+            fetchAndDisplayResult('bac_hai', { a, b, c });
+        });
+
+        // Handle bac_ba form submission
+        document.getElementById('generate-bac-ba').addEventListener('click', function() {
+            const a = document.getElementById('bac_ba_a').value;
+            const b = document.getElementById('bac_ba_b').value;
+            const c = document.getElementById('bac_ba_c').value;
+            const d = document.getElementById('bac_ba_d').value;
+            
+            fetchAndDisplayResult('bac_ba', { a, b, c, d });
+        });
+
+        // Handle trung_phuong form submission
+        document.getElementById('generate-trung-phuong').addEventListener('click', function() {
+            const a = document.getElementById('trung_phuong_a').value;
+            const b = document.getElementById('trung_phuong_b').value;
+            const c = document.getElementById('trung_phuong_c').value;
+            
+            fetchAndDisplayResult('trung_phuong', { a, b, c });
+        });
+
+        // Handle mot_mot form submission
+        document.getElementById('generate-mot-mot').addEventListener('click', function() {
+            const a = document.getElementById('mot_mot_a').value;
+            const b = document.getElementById('mot_mot_b').value;
+            const c = document.getElementById('mot_mot_c').value;
+            const d = document.getElementById('mot_mot_d').value;
+            
+            fetchAndDisplayResult('mot_mot', { a, b, c, d });
+        });
+
+        // Handle hai_mot form submission
+        document.getElementById('generate-hai-mot').addEventListener('click', function() {
+            const a = document.getElementById('hai_mot_a').value;
+            const b = document.getElementById('hai_mot_b').value;
+            const c = document.getElementById('hai_mot_c').value;
+            const m = document.getElementById('hai_mot_m').value;
+            const n = document.getElementById('hai_mot_n').value;
+            
+            fetchAndDisplayResult('hai_mot', { a, b, c, m, n });
+        });
+
+        // Function to fetch and display results
+        function fetchAndDisplayResult(type, params) {
+            // Show loading indicator
+            document.getElementById('latex-code').textContent = 'Đang xử lý...';
+            
+            fetch('/bbt_auto', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    type: type,
+                    ...params
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Display the function
+                    document.getElementById('function-display').innerHTML = '<p>Hàm số: \\(' + data.function + '\\)</p>';
+                    
+                    // Extract the LaTeX code block for preview
+                    let latexPreview = data.latex;
+                    latexPreview = latexPreview.replace(/\\begin\{tikzpicture\}/g, ''); 
+                    latexPreview = latexPreview.replace(/\\end\{tikzpicture\}/g, '');
+                    
+                    // Display raw LaTeX code in a code block
+                    document.getElementById('latex-code').textContent = data.latex;
+                    
+                    // Show copy button
+                    document.getElementById('copy-button').style.display = 'block';
+                    
+                    // Render LaTeX using MathJax
+                    MathJax.typeset();
+                } else {
+                    document.getElementById('latex-code').textContent = 'Lỗi: ' + data.message;
+                    document.getElementById('copy-button').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('latex-code').textContent = 'Đã xảy ra lỗi khi tạo bảng biến thiên';
+                document.getElementById('copy-button').style.display = 'none';
+            });
+        }
+        
+        // Copy button functionality
+        document.getElementById('copy-button').addEventListener('click', function() {
+            const latexCode = document.getElementById('latex-code').textContent;
+            
+            // Create a temporary textarea to copy from
+            const textarea = document.createElement('textarea');
+            textarea.value = latexCode;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            alert('Đã sao chép vào clipboard!');
+        });
+    </script>
+</body>
+</html>
