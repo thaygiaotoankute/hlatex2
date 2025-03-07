@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trạng thái kích hoạt - H_Latex</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .activation-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            grid-gap: 10px;
+            margin-bottom: 20px;
+        }
+        .info-label {
+            font-weight: bold;
+        }
+        .status-active {
+            color: green;
+            font-weight: bold;
+        }
+        .status-inactive {
+            color: red;
+            font-weight: bold;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .action-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .action-button:hover {
+            background-color: #45a049;
+        }
+        .hardware-id-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .hardware-id {
+            font-family: monospace;
+            word-break: break-all;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+        .copy-button {
+            padding: 5px 10px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .copy-button:hover {
+            background-color: #5a6268;
+        }
+        .instructions {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 5px;
+            color: #856404;
+        }
+        .instructions h3 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>H_Latex</h1>
+        <p>Công cụ hỗ trợ LaTeX</p>
+    </div>
+
+    <div class="activation-container">
+        <h2 style="text-align: center;">Trạng thái kích hoạt</h2>
+        
+        <div class="info-grid">
+            <div class="info-label">Tên người dùng:</div>
+            <div>{{ username }}</div>
+            
+            <div class="info-label">Trạng thái:</div>
+            <div>
+                {% if activation_status == "ĐÃ KÍCH HOẠT" %}
+                <span class="status-active">ĐÃ KÍCH HOẠT</span>
+                {% else %}
+                <span class="status-inactive">CHƯA KÍCH HOẠT</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="hardware-id-container">
+            <h3>ID phần cứng của bạn</h3>
+            <p>Vui lòng sao chép ID phần cứng này và gửi cho nhà cung cấp để kích hoạt phần mềm:</p>
+            <div class="hardware-id" id="hardware-id">{{ hardware_id }}</div>
+            <button class="copy-button" id="copy-button">Sao chép</button>
+        </div>
+        
+        {% if activation_status != "ĐÃ KÍCH HOẠT" %}
+        <div class="instructions">
+            <h3>Hướng dẫn kích hoạt:</h3>
+            <ol>
+                <li>Sao chép ID phần cứng ở trên.</li>
+                <li>Liên hệ với nhà cung cấp phần mềm qua email: <strong>support@hlatex.com</strong> hoặc số điện thoại: <strong>0123456789</strong>.</li>
+                <li>Cung cấp ID phần cứng và thông tin thanh toán (nếu cần).</li>
+                <li>Sau khi nhận được xác nhận kích hoạt, nhấn nút "Kiểm tra kích hoạt" bên dưới để cập nhật trạng thái.</li>
+            </ol>
+        </div>
+        {% endif %}
+        
+        <div class="button-container">
+            <a href="/check_activation" class="action-button">Kiểm tra kích hoạt</a>
+            <a href="/" class="action-button">Quay lại trang chủ</a>
+            <a href="/logout" class="action-button" style="background-color: #dc3545;">Đăng xuất</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('copy-button').addEventListener('click', function() {
+            const hardwareId = document.getElementById('hardware-id').textContent;
+            navigator.clipboard.writeText(hardwareId)
+                .then(() => {
+                    this.textContent = 'Đã sao chép!';
+                    setTimeout(() => {
+                        this.textContent = 'Sao chép';
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Không thể sao chép:', err);
+                });
+        });
+    </script>
+</body>
+</html>
