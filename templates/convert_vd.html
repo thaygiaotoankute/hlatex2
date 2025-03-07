@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chuyển vd - H_Latex</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>Chuyển đổi sang định dạng vd</h1>
+        <p>H_Latex</p>
+    </div>
+
+    <div class="container">
+        <div class="conversion-area">
+            <div class="form-group">
+                <label for="input-text">Nhập nội dung cần chuyển đổi:</label>
+                <textarea id="input-text" class="text-area" rows="12" placeholder="Dán nội dung từ MathPix hoặc các nguồn khác vào đây..."></textarea>
+            </div>
+            
+            <button id="convert-button" class="action-button">Chuyển đổi</button>
+            
+            <div class="form-group">
+                <label for="output-text">Kết quả:</label>
+                <textarea id="output-text" class="text-area" rows="12" readonly></textarea>
+            </div>
+            
+            <button id="copy-button" class="action-button">Copy kết quả</button>
+        </div>
+        
+        <div class="instructions">
+            <h3>Hướng dẫn sử dụng</h3>
+            <ol>
+                <li>Sao chép nội dung từ MathPix hoặc các nguồn khác.</li>
+                <li>Dán vào ô nhập liệu phía trên.</li>
+                <li>Nhấn nút "Chuyển đổi" để chuyển sang định dạng LaTeX vd (ví dụ).</li>
+                <li>Sử dụng nút "Copy kết quả" để sao chép kết quả.</li>
+            </ol>
+            
+            <h3>Định dạng được hỗ trợ</h3>
+            <ul>
+                <li>Chuyển đổi từ dạng thô của MathPix sang định dạng vd trong LaTeX.</li>
+                <li>Tự động chuyển "Câu" thành "Ví dụ".</li>
+                <li>Tự động định dạng các ví dụ và lựa chọn.</li>
+                <li>Tự động xử lý các công thức toán học.</li>
+            </ul>
+        </div>
+    </div>
+
+    <a href="/" class="back-link">Quay lại trang chính</a>
+
+    <script>
+        document.getElementById('convert-button').addEventListener('click', function() {
+            const inputText = document.getElementById('input-text').value;
+            
+            if (!inputText.trim()) {
+                alert('Vui lòng nhập nội dung cần chuyển đổi.');
+                return;
+            }
+            
+            // Show loading state
+            document.getElementById('output-text').value = 'Đang xử lý...';
+            
+            // Send to server for conversion
+            fetch('/convert_vd', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: inputText
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('output-text').value = data.converted_text;
+                } else {
+                    document.getElementById('output-text').value = 'Lỗi: ' + data.message;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('output-text').value = 'Đã xảy ra lỗi khi chuyển đổi.';
+            });
+        });
+        
+        document.getElementById('copy-button').addEventListener('click', function() {
+            const outputText = document.getElementById('output-text');
+            
+            if (!outputText.value.trim()) {
+                alert('Không có nội dung để sao chép.');
+                return;
+            }
+            
+            outputText.select();
+            document.execCommand('copy');
+            alert('Đã sao chép vào clipboard!');
+        });
+    </script>
+</body>
+</html>
