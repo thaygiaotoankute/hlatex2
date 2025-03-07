@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng kí bản quyền - H_Latex</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+            height: 100px;
+        }
+        .form-group button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #45a049;
+        }
+        #status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Đăng kí bản quyền</h1>
+        <p>H_Latex</p>
+    </div>
+
+    <div class="container">
+        <div class="form-group">
+            <label for="system-info">Thông tin hệ thống của bạn:</label>
+            <textarea id="system-info" readonly></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="license-code">Mã bản quyền:</label>
+            <textarea id="license-code" placeholder="Nhập mã bản quyền của bạn"></textarea>
+        </div>
+
+        <div class="form-group">
+            <button id="register-button">Đăng kí</button>
+        </div>
+
+        <div id="status-message" style="display: none;"></div>
+    </div>
+
+    <a href="/" class="back-link">Quay lại trang chính</a>
+
+    <script>
+        // Fetch system info when page loads
+        window.onload = function() {
+            fetch('/system_info')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('system-info').value = data.system_info;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('system-info').value = "Không thể lấy thông tin hệ thống";
+                });
+        };
+
+        // Handle registration
+        document.getElementById('register-button').addEventListener('click', function() {
+            const licenseCode = document.getElementById('license-code').value;
+            
+            fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ license_code: licenseCode }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const statusMessage = document.getElementById('status-message');
+                statusMessage.style.display = 'block';
+                
+                if (data.status === 'success') {
+                    statusMessage.className = 'success';
+                    statusMessage.innerText = data.message;
+                    // Redirect to home page after successful registration
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                } else {
+                    statusMessage.className = 'error';
+                    statusMessage.innerText = data.message;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const statusMessage = document.getElementById('status-message');
+                statusMessage.style.display = 'block';
+                statusMessage.className = 'error';
+                statusMessage.innerText = 'Lỗi khi đăng kí: ' + error;
+            });
+        });
+    </script>
+</body>
+</html>
