@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đồ Thị Hàm Tuỳ Ý - H_Latex</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>Đồ Thị Hàm Tuỳ Ý</h1>
+        <p>H_Latex</p>
+    </div>
+
+    <div class="container">
+        <div class="function-settings">
+            <h3>Cài đặt đồ thị</h3>
+            
+            <div class="form-group-row">
+                <div class="form-group">
+                    <label for="xmin">xmin:</label>
+                    <input type="text" id="xmin" value="-5">
+                </div>
+                <div class="form-group">
+                    <label for="xmax">xmax:</label>
+                    <input type="text" id="xmax" value="5">
+                </div>
+            </div>
+            
+            <div class="form-group-row">
+                <div class="form-group">
+                    <label for="ymin">ymin:</label>
+                    <input type="text" id="ymin" value="-5">
+                </div>
+                <div class="form-group">
+                    <label for="ymax">ymax:</label>
+                    <input type="text" id="ymax" value="5">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="gtx">Hiển thị các điểm trên trục Ox:</label>
+                <input type="text" id="gtx" placeholder="Ví dụ: -4,-3,-2,-1,0,1,2,3,4">
+            </div>
+            
+            <div class="form-group">
+                <label for="gty">Hiển thị các điểm trên trục Oy:</label>
+                <input type="text" id="gty" placeholder="Ví dụ: -4,-3,-2,-1,0,1,2,3,4">
+            </div>
+        </div>
+        
+        <div class="function-inputs">
+            <div class="function-group">
+                <h3>Hàm f(x)</h3>
+                <div class="form-group">
+                    <label for="hsf">Biểu thức f(x):</label>
+                    <input type="text" id="hsf" placeholder="Ví dụ: sin(x) hoặc x^2">
+                </div>
+                
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="fa">Miền xác định từ a =</label>
+                        <input type="text" id="fa" placeholder="Để trống = xmin">
+                    </div>
+                    <div class="form-group">
+                        <label for="fb">đến b =</label>
+                        <input type="text" id="fb" placeholder="Để trống = xmax">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="function-group">
+                <h3>Hàm g(x) (tùy chọn)</h3>
+                <div class="form-group">
+                    <label for="hsg">Biểu thức g(x):</label>
+                    <input type="text" id="hsg" placeholder="Ví dụ: cos(x) hoặc -x^2">
+                </div>
+                
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="ga">Miền xác định từ a =</label>
+                        <input type="text" id="ga" placeholder="Để trống = xmin">
+                    </div>
+                    <div class="form-group">
+                        <label for="gb">đến b =</label>
+                        <input type="text" id="gb" placeholder="Để trống = xmax">
+                    </div>
+                </div>
+            </div>
+            
+            <button id="generate-graph" class="action-button">Xuất code</button>
+        </div>
+
+        <div id="result" class="result-container">
+            <h3>Kết quả</h3>
+            <div id="functions-display"></div>
+            <pre id="latex-code" class="code-box"></pre>
+            <button id="copy-button" class="action-button" style="display: none;">Copy code</button>
+        </div>
+    </div>
+
+    <a href="/" class="back-link">Quay lại trang chính</a>
+
+    <script>
+        document.getElementById('generate-graph').addEventListener('click', function() {
+            // Collect all inputs
+            const data = {
+                xmin: document.getElementById('xmin').value,
+                xmax: document.getElementById('xmax').value,
+                ymin: document.getElementById('ymin').value,
+                ymax: document.getElementById('ymax').value,
+                gtx: document.getElementById('gtx').value,
+                gty: document.getElementById('gty').value,
+                hsf: document.getElementById('hsf').value,
+                fa: document.getElementById('fa').value,
+                fb: document.getElementById('fb').value,
+                hsg: document.getElementById('hsg').value,
+                ga: document.getElementById('ga').value,
+                gb: document.getElementById('gb').value
+            };
+            
+            // Validate at least one function is provided
+            if (!data.hsf && !data.hsg) {
+                alert('Vui lòng nhập ít nhất một hàm số f(x) hoặc g(x).');
+                return;
+            }
+            
+            // Show loading indicator
+            document.getElementById('latex-code').textContent = 'Đang xử lý...';
+            
+            // Send request to server
+            fetch('/graph_custom', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Display the functions
+                    let functionsHTML = '<p>Các hàm số:</p><ul>';
+                    data.functions.forEach(func => {
+                        if (func) {
+                            functionsHTML += `<li>${func}</li>`;
+                        }
+                    });
+                    functionsHTML += '</ul>';
+                    document.getElementById('functions-display').innerHTML = functionsHTML;
+                    
+                    // Display raw LaTeX code in a code block
+                    document.getElementById('latex-code').textContent = data.latex;
+                    
+                    // Show copy button
+                    document.getElementById('copy-button').style.display = 'block';
+                } else {
+                    document.getElementById('latex-code').textContent = 'Lỗi: ' + data.message;
+                    document.getElementById('copy-button').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('latex-code').textContent = 'Đã xảy ra lỗi khi tạo đồ thị';
+                document.getElementById('copy-button').style.display = 'none';
+            });
+        });
+        
+        // Copy button functionality
+        document.getElementById('copy-button').addEventListener('click', function() {
+            const latexCode = document.getElementById('latex-code').textContent;
+            
+            // Create a temporary textarea to copy from
+            const textarea = document.createElement('textarea');
+            textarea.value = latexCode;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            alert('Đã sao chép vào clipboard!');
+        });
+        
+        // Helper function to validate numerics
+        function isNumeric(value) {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        }
+    </script>
+</body>
+</html>
