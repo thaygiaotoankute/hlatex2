@@ -2,7 +2,7 @@
 # def_bbt.py (Web version - simplified)
 import math
 from fractions import Fraction
-from web_modules.def_cal import *
+from modules.def_cal import *
 
 def view_dt_chuan(block):
     block = block.replace('++', '+')
