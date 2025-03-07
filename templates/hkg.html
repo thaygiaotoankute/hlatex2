@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mẫu hình không gian - H_Latex</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .form-container {
+            display: none;
+        }
+        .form-container.active {
+            display: block;
+        }
+        .point-input {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .point-input label {
+            width: 200px;
+        }
+        .point-input input {
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Mẫu hình không gian</h1>
+        <p>H_Latex</p>
+    </div>
+
+    <div class="container">
+        <div class="shape-selector">
+            <h3>Chọn loại hình</h3>
+            <select id="shape-type">
+                <option value="">Chọn mẫu hình</option>
+                <option value="tu_dien_co_ban">Tứ diện cơ bản</option>
+                <option value="chop_tam_giac_1">S.ABC có h=SA</option>
+                <option value="chop_tam_giac_2">S.ABC đều</option>
+                <option value="chop_tam_giac_3">S.ABC có SBC đứng</option>
+                <option value="chop_tu_giac_1">S.ABCD có h=SA</option>
+                <option value="chop_tu_giac_2">S.ABCD đều</option>
+                <option value="chop_tu_giac_3">S.ABCD có SAB đứng</option>
+                <option value="lang_tru_dung">Lăng trụ đứng tam giác</option>
+                <option value="lang_tru_xien">Lăng trụ xiên tam giác</option>
+                <option value="hinh_hop_cn">Hình hộp chữ nhật</option>
+                <option value="hinh_hop_thuong">Hình hộp thường</option>
+                <option value="hinh_lap_phuong">Hình lập phương</option>
+                <option value="khoi_non">Khối nón</option>
+                <option value="khoi_tru">Khối trụ</option>
+                <option value="khoi_cau">Khối cầu</option>
+            </select>
+        </div>
+
+        <!-- Tứ diện cơ bản -->
+        <div id="tu_dien_co_ban" class="form-container">
+            <h3>Tứ diện cơ bản</h3>
+            <div class="point-input">
+                <label for="tda">Đỉnh:</label>
+                <input type="text" id="tda" value="A">
+            </div>
+            <div class="point-input">
+                <label for="tdb">Điểm thứ nhất ở đáy:</label>
+                <input type="text" id="tdb" value="B">
+            </div>
+            <div class="point-input">
+                <label for="tdc">Điểm thứ hai ở đáy:</label>
+                <input type="text" id="tdc" value="C">
+            </div>
+            <div class="point-input">
+                <label for="tdd">Điểm thứ ba ở đáy:</label>
+                <input type="text" id="tdd" value="D">
+            </div>
+        </div>
+
+        <!-- S.ABC có h=SA -->
+        <div id="chop_tam_giac_1" class="form-container">
+            <h3>S.ABC có h=SA</h3>
+            <div class="point-input">
+                <label for="tg1s">Đỉnh:</label>
+                <input type="text" id="tg1s" value="S">
+            </div>
+            <div class="point-input">
+                <label for="tg1a">Điểm thứ nhất ở đáy:</label>
+                <input type="text" id="tg1a" value="A">
+            </div>
+            <div class="point-input">
+                <label for="tg1b">Điểm thứ hai ở đáy:</label>
+                <input type="text" id="tg1b" value="B">
+            </div>
+            <div class="point-input">
+                <label for="tg1c">Điểm thứ ba ở đáy:</label>
+                <input type="text" id="tg1c" value="C">
+            </div>
+        </div>
+
+        <!-- S.ABC đều -->
+        <div id="chop_tam_giac_2" class="form-container">
+            <h3>S.ABC đều</h3>
+            <div class="point-input">
+                <label for="tg2s">Đỉnh:</label>
+                <input type="text" id="tg2s" value="S">
+            </div>
+            <div class="point-input">
+                <label for="tg2a">Điểm thứ nhất ở đáy:</label>
+                <input type="text" id="tg2a" value="A">
+            </div>
+            <div class="point-input">
+                <label for="tg2b">Điểm thứ hai ở đáy:</label>
+                <input type="text" id="tg2b" value="B">
+            </div>
+            <div class="point-input">
+                <label for="tg2c">Điểm thứ ba ở đáy:</label>
+                <input type="text" id="tg2c" value="C">
+            </div>
+            <div class="point-input">
+                <label for="tg2g">Trọng tâm ở đáy:</label>
+                <input type="text" id="tg2g" value="G">
+            </div>
+            <div class="point-input">
+                <label for="tg2m">Trung điểm ở cạnh đáy:</label>
+                <input type="text" id="tg2m" value="M">
+            </div>
+        </div>
+
+        <!-- Add other shape forms similarly -->
+        
+        <div class="form-actions">
+            <button id="generate-button" class="action-button">Xuất code</button>
+        </div>
+
+        <div id="result" class="result-container">
+            <h3>Kết quả</h3>
+            <pre id="latex-code" class="code-box"></pre>
+            <button id="copy-button" class="action-button" style="display: none;">Copy code</button>
+        </div>
+    </div>
+
+    <a href="/" class="back-link">Quay lại trang chính</a>
+
+    <script>
+        // Show the appropriate form based on the selection
+        document.getElementById('shape-type').addEventListener('change', function() {
+            // Hide all forms
+            document.querySelectorAll('.form-container').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            // Show selected form
+            const selectedValue = this.value;
+            if (selectedValue) {
+                const selectedForm = document.getElementById(selectedValue);
+                if (selectedForm) {
+                    selectedForm.classList.add('active');
+                }
+            }
+        });
+        
+        // Generate the LaTeX code
+        document.getElementById('generate-button').addEventListener('click', function() {
+            const shapeType = document.getElementById('shape-type').value;
+            
+            if (!shapeType) {
+                alert('Vui lòng chọn loại hình.');
+                return;
+            }
+            
+            // Collect form data based on shape type
+            let data = { type: '' };
+            
+            if (shapeType === 'tu_dien_co_ban') {
+                data = {
+                    type: 'tu_dien_co_ban',
+                    tda: document.getElementById('tda').value,
+                    tdb: document.getElementById('tdb').value,
+                    tdc: document.getElementById('tdc').value,
+                    tdd: document.getElementById('tdd').value
+                };
+            } else if (shapeType === 'chop_tam_giac_1') {
+                data = {
+                    type: 'chop_tam_giac',
+                    chop_type: 'loai_mot',
+                    tg1s: document.getElementById('tg1s').value,
+                    tg1a: document.getElementById('tg1a').value,
+                    tg1b: document.getElementById('tg1b').value,
+                    tg1c: document.getElementById('tg1c').value
+                };
+            } else if (shapeType === 'chop_tam_giac_2') {
+                data = {
+                    type: 'chop_tam_giac',
+                    chop_type: 'loai_hai',
+                    tg2s: document.getElementById('tg2s').value,
+                    tg2a: document.getElementById('tg2a').value,
+                    tg2b: document.getElementById('tg2b').value,
+                    tg2c: document.getElementById('tg2c').value,
+                    tg2g: document.getElementById('tg2g').value,
+                    tg2m: document.getElementById('tg2m').value
+                };
+            }
+            // Add other shape types similarly
+            
+            // Show loading indicator
+            document.getElementById('latex-code').textContent = 'Đang xử lý...';
+            
+            // Send to server
+            fetch('/hkg', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('latex-code').textContent = data.latex;
+                    document.getElementById('copy-button').style.display = 'block';
+                } else {
+                    document.getElementById('latex-code').textContent = 'Lỗi: ' + data.message;
+                    document.getElementById('copy-button').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('latex-code').textContent = 'Đã xảy ra lỗi khi tạo mẫu hình';
+                document.getElementById('copy-button').style.display = 'none';
+            });
+        });
+        
+        // Copy button functionality
+        document.getElementById('copy-button').addEventListener('click', function() {
+            const latexCode = document.getElementById('latex-code').textContent;
+            
+            // Create a temporary textarea to copy from
+            const textarea = document.createElement('textarea');
+            textarea.value = latexCode;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            alert('Đã sao chép vào clipboard!');
+        });
+    </script>
+</body>
+</html>
