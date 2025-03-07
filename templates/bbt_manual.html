@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Biến Thiên Thủ Công - H_Latex</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        select, input {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .action-button {
+            padding: 8px 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Bảng Biến Thiên Thủ Công</h1>
+        <p>H_Latex</p>
+    </div>
+
+    <div class="container">
+        <div class="action-row">
+            <button class="action-button" id="add-column">Thêm cột</button>
+            <button class="action-button" id="remove-column">Xoá cột</button>
+            <button class="action-button" id="add-sign-row">Thêm hàng Xét dấu</button>
+            <button class="action-button" id="remove-sign-row">Xoá hàng Xét dấu</button>
+            <button class="action-button" id="add-value-row">Thêm hàng Giá trị</button>
+            <button class="action-button" id="remove-value-row">Xoá hàng Giá trị</button>
+        </div>
+
+        <div class="table-container">
+            <table id="bbt-table">
+                <thead>
+                    <tr>
+                        <th>Hàm</th>
+                        <th>Giá trị 1</th>
+                        <th>Dấu 1</th>
+                        <th>Giá trị 2</th>
+                        <th>Dấu 2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" placeholder="Biến" id="variable-name"></td>
+                        <td><input type="text" placeholder="Giá trị"></td>
+                        <td>
+                            <select>
+                                <option value=""></option>
+                                <option value="+">+</option>
+                                <option value="-">-</option>
+                                <option value="h">h</option>
+                            </select>
+                        </td>
+                        <td><input type="text" placeholder="Giá trị"></td>
+                        <td>
+                            <select>
+                                <option value=""></option>
+                                <option value="+">+</option>
+                                <option value="-">-</option>
+                                <option value="h">h</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" placeholder="Xét dấu" id="sign-name"></td>
+                        <td><input type="text" placeholder="Giá trị"></td>
+                        <td>
+                            <select>
+                                <option value=""></option>
+                                <option value="+">+</option>
+                                <option value="-">-</option>
+                                <option value="h">h</option>
+                            </select>
+                        </td>
+                        <td><input type="text" placeholder="Giá trị"></td>
+                        <td>
+                            <select>
+                                <option value=""></option>
+                                <option value="+">+</option>
+                                <option value="-">-</option>
+                                <option value="h">h</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" placeholder="Giá trị" id="value-name"></td>
+                        <td><input type="text" placeholder="Giá trị"></td>
+                        <td>
+                            <select>
+                                <option value=""></option>
+                                <option value="+">+</option>
+                                <option value="-">-</option>
+                                <option value="h">h</option>
+                            </select>
+                        </td>
+                        <td><input type="text" placeholder="Giá trị"></td>
+                        <td>
+                            <select>
+                                <option value=""></option>
+                                <option value="+">+</option>
+                                <option value="-">-</option>
+                                <option value="h">h</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <button class="action-button" id="generate-bbt">Xuất code</button>
+
+        <div id="result" class="result-container">
+            <h3>Kết quả</h3>
+            <pre id="latex-code" class="code-box"></pre>
+            <button id="copy-button" class="action-button" style="display: none;">Copy code</button>
+        </div>
+    </div>
+
+    <a href="/" class="back-link">Quay lại trang chính</a>
+
+    <script>
+        // Variables to track table state
+        let numPairs = 2; // Initial number of "Giá trị" and "Dấu" pairs
+        let hasSignRow = true;
+        let hasValueRow = true;
+
+        // Add column pair
+        document.getElementById('add-column').addEventListener('click', function() {
+            const table = document.getElementById('bbt-table');
+            
+            // Add header cells
+            const headerRow = table.querySelector('thead tr');
+            const newColumn1 = document.createElement('th');
+            newColumn1.textContent = `Giá trị ${numPairs + 1}`;
+            const newColumn2 = document.createElement('th');
+            newColumn2.textContent = `Dấu ${numPairs + 1}`;
+            headerRow.appendChild(newColumn1);
+            headerRow.appendChild(newColumn2);
+            
+            // Add cells to each row
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const newCell1 = document.createElement('td');
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = 'Giá trị';
+                newCell1.appendChild(input);
+                
+                const newCell2 = document.createElement('td');
+                const select = document.createElement('select');
+                ['', '+', '-', 'h'].forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option;
+                    opt.textContent = option;
+                    select.appendChild(opt);
+                });
+                newCell2.appendChild(select);
+                
+                row.appendChild(newCell1);
+                row.appendChild(newCell2);
+            });
+            
+            numPairs++;
+        });
+
+        // Remove column pair
+        document.getElementById('remove-column').addEventListener('click', function() {
+            if (numPairs > 1) {
+                const table = document.getElementById('bbt-table');
+                
+                // Remove header cells
+                const headerRow = table.querySelector('thead tr');
+                headerRow.removeChild(headerRow.lastChild);
+                headerRow.removeChild(headerRow.lastChild);
+                
+                // Remove cells from each row
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    row.removeChild(row.lastChild);
+                    row.removeChild(row.lastChild);
+                });
+                
+                numPairs--;
+            }
+        });
+
+        // Add sign row
+        document.getElementById('add-sign-row').addEventListener('click', function() {
+            if (!hasSignRow) {
+                const table = document.getElementById('bbt-table');
+                const tbody = table.querySelector('tbody');
+                
+                // Create new row
+                const newRow = document.createElement('tr');
+                
+                // Add first cell (Xét dấu)
+                const firstCell = document.createElement('td');
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.placeholder = 'Xét dấu';
+                nameInput.id = 'sign-name';
+                firstCell.appendChild(nameInput);
+                newRow.appendChild(firstCell);
+                
+                // Add other cells
+                for (let i = 0; i < numPairs; i++) {
+                    // Value cell
+                    const valueCell = document.createElement('td');
+                    const valueInput = document.createElement('input');
+                    valueInput.type = 'text';
+                    valueInput.placeholder = 'Giá trị';
+                    valueCell.appendChild(valueInput);
+                    newRow.appendChild(valueCell);
+                    
+                    // Sign cell
+                    const signCell = document.createElement('td');
+                    const signSelect = document.createElement('select');
+                    ['', '+', '-', 'h'].forEach(option => {
+                        const opt = document.createElement('option');
+                        opt.value = option;
+                        opt.textContent = option;
+                        signSelect.appendChild(opt);
+                    });
+                    signCell.appendChild(signSelect);
+                    newRow.appendChild(signCell);
+                }
+                
+                // Insert new row after first row
+                const firstRow = tbody.querySelector('tr');
+                tbody.insertBefore(newRow, firstRow.nextSibling);
+                
+                hasSignRow = true;
+            }
+        });
+
+        // Remove sign row
+        document.getElementById('remove-sign-row').addEventListener('click', function() {
+            if (hasSignRow) {
+                const table = document.getElementById('bbt-table');
+                const tbody = table.querySelector('tbody');
+                const rows = tbody.querySelectorAll('tr');
+                
+                // Find and remove the sign row
+                for (let i = 0; i < rows.length; i++) {
+                    const nameInput = rows[i].querySelector('td:first-child input');
+                    if (nameInput && nameInput.id === 'sign-name') {
+                        tbody.removeChild(rows[i]);
+                        break;
+                    }
+                }
+                
+                hasSignRow = false;
+            }
+        });
+
+        // Add value row
+        document.getElementById('add-value-row').addEventListener('click', function() {
+            if (!hasValueRow) {
+                const table = document.getElementById('bbt-table');
+                const tbody = table.querySelector('tbody');
+                
+                // Create new row
+                const newRow = document.createElement('tr');
+                
+                // Add first cell (Giá trị)
+                const firstCell = document.createElement('td');
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.placeholder = 'Giá trị';
+                nameInput.id = 'value-name';
+                firstCell.appendChild(nameInput);
+                newRow.appendChild(firstCell);
+                
+                // Add other cells
+                for (let i = 0; i < numPairs; i++) {
+                    // Value cell
+                    const valueCell = document.createElement('td');
+                    const valueInput = document.createElement('input');
+                    valueInput.type = 'text';
+                    valueInput.placeholder = 'Giá trị';
+                    valueCell.appendChild(valueInput);
+                    newRow.appendChild(valueCell);
+                    
+                    // Sign cell
+                    const signCell = document.createElement('td');
+                    const signSelect = document.createElement('select');
+                    ['', '+', '-', 'h'].forEach(option => {
+                        const opt = document.createElement('option');
+                        opt.value = option;
+                        opt.textContent = option;
+                        signSelect.appendChild(opt);
+                    });
+                    signCell.appendChild(signSelect);
+                    newRow.appendChild(signCell);
+                }
+                
+                // Append new row to tbody
+                tbody.appendChild(newRow);
+                
+                hasValueRow = true;
+            }
+        });
+
+        // Remove value row
+        document.getElementById('remove-value-row').addEventListener('click', function() {
+            if (hasValueRow) {
+                const table = document.getElementById('bbt-table');
+                const tbody = table.querySelector('tbody');
+                const rows = tbody.querySelectorAll('tr');
+                
+                // Find and remove the value row
+                for (let i = 0; i < rows.length; i++) {
+                    const nameInput = rows[i].querySelector('td:first-child input');
+                    if (nameInput && nameInput.id === 'value-name') {
+                        tbody.removeChild(rows[i]);
+                        break;
+                    }
+                }
+                
+                hasValueRow = false;
+            }
+        });
+
+        // Generate BBT
+        document.getElementById('generate-bbt').addEventListener('click', function() {
+            // Gather row headers
+            const rowHeaders = [];
+            const rows = document.querySelectorAll('#bbt-table tbody tr');
+            rows.forEach(row => {
+                const firstCell = row.querySelector('td:first-child input');
+                if (firstCell) {
+                    rowHeaders.push(firstCell.value || firstCell.placeholder);
+                }
+            });
+            
+            // Gather values from the table
+            const values = {};
+            
+            // Extract values for dong1 (column values from first row)
+            values.dong1 = [];
+            const headerCells = document.querySelectorAll('#bbt-table thead th');
+            for (let i = 1; i < headerCells.length; i += 2) {
+                const valueCell = rows[0].querySelectorAll('td')[i].querySelector('input');
+                if (valueCell) {
+                    values.dong1.push(valueCell.value || '');
+                }
+            }
+            
+            // Extract values for dong2 (sign values from second row if it exists)
+            values.dong2 = [];
+            if (rows.length > 1 && rowHeaders.includes('Xét dấu')) {
+                const signRow = Array.from(rows).find(row => 
+                    row.querySelector('td:first-child input').value === 'Xét dấu' ||
+                    row.querySelector('td:first-child input').placeholder === 'Xét dấu');
+                
+                if (signRow) {
+                    const cells = signRow.querySelectorAll('td');
+                    for (let i = 2; i < cells.length; i += 2) {
+                        const signSelect = cells[i].querySelector('select');
+                        if (signSelect) {
+                            values.dong2.push(signSelect.value);
+                        }
+                    }
+                }
+            }
+            
+            // Extract values for dong3 (value values from third row if it exists)
+            values.dong3 = [];
+            if (rows.length > 2 && rowHeaders.includes('Giá trị')) {
+                const valueRow = Array.from(rows).find(row => 
+                    row.querySelector('td:first-child input').value === 'Giá trị' ||
+                    row.querySelector('td:first-child input').placeholder === 'Giá trị');
+                
+                if (valueRow) {
+                    const cells = valueRow.querySelectorAll('td');
+                    for (let i = 1; i < cells.length; i += 2) {
+                        const valueInput = cells[i].querySelector('input');
+                        if (valueInput) {
+                            values.dong3.push(valueInput.value || '');
+                        }
+                    }
+                }
+            }
+            
+            // Extract names for valueh
+            values.valueh = rowHeaders;
+            
+            // Send to server
+            fetch('/bbt_manual', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    rowHeaders: rowHeaders,
+                    values: values
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Display the LaTeX code
+                    document.getElementById('latex-code').textContent = data.latex;
+                    
+                    // Show copy button
+                    document.getElementById('copy-button').style.display = 'block';
+                } else {
+                    document.getElementById('latex-code').textContent = 'Lỗi: ' + data.message;
+                    document.getElementById('copy-button').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('latex-code').textContent = 'Đã xảy ra lỗi khi tạo bảng biến thiên';
+                document.getElementById('copy-button').style.display = 'none';
+            });
+        });
+        
+        // Copy button functionality
+        document.getElementById('copy-button').addEventListener('click', function() {
+            const latexCode = document.getElementById('latex-code').textContent;
+            
+            // Create a temporary textarea to copy from
+            const textarea = document.createElement('textarea');
+            textarea.value = latexCode;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            alert('Đã sao chép vào clipboard!');
+        });
+    </script>
+</body>
+</html>
