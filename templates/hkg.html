@@ -4,23 +4,130 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mẫu hình không gian - H_Latex</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        
+        .header {
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        
+        .header p {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .shape-selector {
+            margin-bottom: 1rem;
+        }
+        
+        select {
+            padding: 0.5rem;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 500px;
+        }
+        
         .form-container {
             display: none;
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+        
         .form-container.active {
             display: block;
         }
+        
         .point-input {
             display: flex;
-            margin-bottom: 10px;
+            margin-bottom: 0.5rem;
+            align-items: center;
         }
+        
         .point-input label {
             width: 200px;
+            font-weight: bold;
         }
+        
         .point-input input {
-            width: 50px;
+            width: 80px;
+            padding: 0.3rem;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            text-align: center;
+        }
+        
+        .form-actions {
+            margin: 1rem 0;
+        }
+        
+        .action-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+        
+        .action-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .result-container {
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .code-box {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            margin: 0;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin: 1rem;
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -124,10 +231,320 @@
             </div>
         </div>
 
-        <!-- Add other shape forms similarly -->
+        <!-- S.ABC có SBC đứng -->
+        <div id="chop_tam_giac_3" class="form-container">
+            <h3>S.ABC có SBC đứng</h3>
+            <div class="point-input">
+                <label for="tg3s">Đỉnh:</label>
+                <input type="text" id="tg3s" value="S">
+            </div>
+            <div class="point-input">
+                <label for="tg3a">Điểm thứ nhất ở đáy:</label>
+                <input type="text" id="tg3a" value="A">
+            </div>
+            <div class="point-input">
+                <label for="tg3b">Điểm thứ hai ở đáy:</label>
+                <input type="text" id="tg3b" value="B">
+            </div>
+            <div class="point-input">
+                <label for="tg3c">Điểm thứ ba ở đáy:</label>
+                <input type="text" id="tg3c" value="C">
+            </div>
+            <div class="point-input">
+                <label for="tg3h">Chân đường cao:</label>
+                <input type="text" id="tg3h" value="H">
+            </div>
+        </div>
+
+        <!-- S.ABCD có h=SA -->
+        <div id="chop_tu_giac_1" class="form-container">
+            <h3>S.ABCD có h=SA</h3>
+            <div class="point-input">
+                <label for="tug1s">Đỉnh:</label>
+                <input type="text" id="tug1s" value="S">
+            </div>
+            <div class="point-input">
+                <label for="tug1a">Điểm thứ nhất ở đáy:</label>
+                <input type="text" id="tug1a" value="A">
+            </div>
+            <div class="point-input">
+                <label for="tug1b">Điểm thứ hai ở đáy:</label>
+                <input type="text" id="tug1b" value="B">
+            </div>
+            <div class="point-input">
+                <label for="tug1c">Điểm thứ ba ở đáy:</label>
+                <input type="text" id="tug1c" value="C">
+            </div>
+            <div class="point-input">
+                <label for="tug1d">Điểm thứ tư ở đáy:</label>
+                <input type="text" id="tug1d" value="D">
+            </div>
+        </div>
+
+        <!-- S.ABCD đều -->
+        <div id="chop_tu_giac_2" class="form-container">
+            <h3>S.ABCD đều</h3>
+            <div class="point-input">
+                <label for="tug2s">Đỉnh:</label>
+                <input type="text" id="tug2s" value="S">
+            </div>
+            <div class="point-input">
+                <label for="tug2a">Điểm thứ nhất ở đáy:</label>
+                <input type="text" id="tug2a" value="A">
+            </div>
+            <div class="point-input">
+                <label for="tug2b">Điểm thứ hai ở đáy:</label>
+                <input type="text" id="tug2b" value="B">
+            </div>
+            <div class="point-input">
+                <label for="tug2c">Điểm thứ ba ở đáy:</label>
+                <input type="text" id="tug2c" value="C">
+            </div>
+            <div class="point-input">
+                <label for="tug2d">Điểm thứ tư ở đáy:</label>
+                <input type="text" id="tug2d" value="D">
+            </div>
+            <div class="point-input">
+                <label for="tug2g">Trọng tâm ở đáy:</label>
+                <input type="text" id="tug2g" value="G">
+            </div>
+        </div>
+
+        <!-- S.ABCD có SAB đứng -->
+        <div id="chop_tu_giac_3" class="form-container">
+            <h3>S.ABCD có SAB đứng</h3>
+            <div class="point-input">
+                <label for="tug3s">Đỉnh:</label>
+                <input type="text" id="tug3s" value="S">
+            </div>
+            <div class="point-input">
+                <label for="tug3a">Điểm thứ nhất ở đáy:</label>
+                <input type="text" id="tug3a" value="A">
+            </div>
+            <div class="point-input">
+                <label for="tug3b">Điểm thứ hai ở đáy:</label>
+                <input type="text" id="tug3b" value="B">
+            </div>
+            <div class="point-input">
+                <label for="tug3c">Điểm thứ ba ở đáy:</label>
+                <input type="text" id="tug3c" value="C">
+            </div>
+            <div class="point-input">
+                <label for="tug3d">Điểm thứ tư ở đáy:</label>
+                <input type="text" id="tug3d" value="D">
+            </div>
+            <div class="point-input">
+                <label for="tug3h">Chân đường cao:</label>
+                <input type="text" id="tug3h" value="H">
+            </div>
+        </div>
+
+        <!-- Lăng trụ đứng tam giác -->
+        <div id="lang_tru_dung" class="form-container">
+            <h3>Lăng trụ đứng tam giác</h3>
+            <div class="point-input">
+                <label for="lt1a">Điểm thứ nhất ở đáy:</label>
+                <input type="text" id="lt1a" value="A">
+            </div>
+            <div class="point-input">
+                <label for="lt1b">Điểm thứ hai ở đáy:</label>
+                <input type="text" id="lt1b" value="B">
+            </div>
+            <div class="point-input">
+                <label for="lt1c">Điểm thứ ba ở đáy:</label>
+                <input type="text" id="lt1c" value="C">
+            </div>
+            <div class="point-input">
+                <label for="lt1m">Điểm thứ nhất ở đỉnh:</label>
+                <input type="text" id="lt1m" value="A'">
+            </div>
+            <div class="point-input">
+                <label for="lt1n">Điểm thứ hai ở đỉnh:</label>
+                <input type="text" id="lt1n" value="B'">
+            </div>
+            <div class="point-input">
+                <label for="lt1p">Điểm thứ ba ở đỉnh:</label>
+                <input type="text" id="lt1p" value="C'">
+            </div>
+        </div>
+
+        <!-- Lăng trụ xiên tam giác -->
+        <div id="lang_tru_xien" class="form-container">
+            <h3>Lăng trụ xiên tam giác</h3>
+            <div class="point-input">
+                <label for="lt2a">Điểm thứ nhất ở đáy:</label>
+                <input type="text" id="lt2a" value="A">
+            </div>
+            <div class="point-input">
+                <label for="lt2b">Điểm thứ hai ở đáy:</label>
+                <input type="text" id="lt2b" value="B">
+            </div>
+            <div class="point-input">
+                <label for="lt2c">Điểm thứ ba ở đáy:</label>
+                <input type="text" id="lt2c" value="C">
+            </div>
+            <div class="point-input">
+                <label for="lt2m">Điểm thứ nhất ở đỉnh:</label>
+                <input type="text" id="lt2m" value="A'">
+            </div>
+            <div class="point-input">
+                <label for="lt2n">Điểm thứ hai ở đỉnh:</label>
+                <input type="text" id="lt2n" value="B'">
+            </div>
+            <div class="point-input">
+                <label for="lt2p">Điểm thứ ba ở đỉnh:</label>
+                <input type="text" id="lt2p" value="C'">
+            </div>
+        </div>
+
+        <!-- Hình hộp chữ nhật -->
+        <div id="hinh_hop_cn" class="form-container">
+            <h3>Hình hộp chữ nhật</h3>
+            <div class="point-input">
+                <label for="hh1a">Điểm thứ nhất ở đáy:</label>
+                <input type="text" id="hh1a" value="A">
+            </div>
+            <div class="point-input">
+                <label for="hh1b">Điểm thứ hai ở đáy:</label>
+                <input type="text" id="hh1b" value="B">
+            </div>
+            <div class="point-input">
+                <label for="hh1c">Điểm thứ ba ở đáy:</label>
+                <input type="text" id="hh1c" value="C">
+            </div>
+            <div class="point-input">
+                <label for="hh1d">Điểm thứ tư ở đáy:</label>
+                <input type="text" id="hh1d" value="D">
+            </div>
+            <div class="point-input">
+                <label for="hh1m">Điểm thứ nhất ở đỉnh:</label>
+                <input type="text" id="hh1m" value="A'">
+            </div>
+            <div class="point-input">
+                <label for="hh1n">Điểm thứ hai ở đỉnh:</label>
+                <input type="text" id="hh1n" value="B'">
+            </div>
+            <div class="point-input">
+                <label for="hh1p">Điểm thứ ba ở đỉnh:</label>
+                <input type="text" id="hh1p" value="C'">
+            </div>
+            <div class="point-input">
+                <label for="hh1q">Điểm thứ tư ở đỉnh:</label>
+                <input type="text" id="hh1q" value="D'">
+            </div>
+        </div>
+
+        <!-- Hình hộp thường -->
+        <div id="hinh_hop_thuong" class="form-container">
+            <h3>Hình hộp thường</h3>
+            <div class="point-input">
+                <label for="hh2a">Điểm thứ nhất ở đáy:</label>
+                <input type="text" id="hh2a" value="A">
+            </div>
+            <div class="point-input">
+                <label for="hh2b">Điểm thứ hai ở đáy:</label>
+                <input type="text" id="hh2b" value="B">
+            </div>
+            <div class="point-input">
+                <label for="hh2c">Điểm thứ ba ở đáy:</label>
+                <input type="text" id="hh2c" value="C">
+            </div>
+            <div class="point-input">
+                <label for="hh2d">Điểm thứ tư ở đáy:</label>
+                <input type="text" id="hh2d" value="D">
+            </div>
+            <div class="point-input">
+                <label for="hh2m">Điểm thứ nhất ở đỉnh:</label>
+                <input type="text" id="hh2m" value="A'">
+            </div>
+            <div class="point-input">
+                <label for="hh2n">Điểm thứ hai ở đỉnh:</label>
+                <input type="text" id="hh2n" value="B'">
+            </div>
+            <div class="point-input">
+                <label for="hh2p">Điểm thứ ba ở đỉnh:</label>
+                <input type="text" id="hh2p" value="C'">
+            </div>
+            <div class="point-input">
+                <label for="hh2q">Điểm thứ tư ở đỉnh:</label>
+                <input type="text" id="hh2q" value="D'">
+            </div>
+        </div>
+
+        <!-- Hình lập phương -->
+        <div id="hinh_lap_phuong" class="form-container">
+            <h3>Hình lập phương</h3>
+            <div class="point-input">
+                <label for="hh3a">Điểm thứ nhất ở đáy:</label>
+                <input type="text" id="hh3a" value="A">
+            </div>
+            <div class="point-input">
+                <label for="hh3b">Điểm thứ hai ở đáy:</label>
+                <input type="text" id="hh3b" value="B">
+            </div>
+            <div class="point-input">
+                <label for="hh3c">Điểm thứ ba ở đáy:</label>
+                <input type="text" id="hh3c" value="C">
+            </div>
+            <div class="point-input">
+                <label for="hh3d">Điểm thứ tư ở đáy:</label>
+                <input type="text" id="hh3d" value="D">
+            </div>
+            <div class="point-input">
+                <label for="hh3m">Điểm thứ nhất ở đỉnh:</label>
+                <input type="text" id="hh3m" value="A'">
+            </div>
+            <div class="point-input">
+                <label for="hh3n">Điểm thứ hai ở đỉnh:</label>
+                <input type="text" id="hh3n" value="B'">
+            </div>
+            <div class="point-input">
+                <label for="hh3p">Điểm thứ ba ở đỉnh:</label>
+                <input type="text" id="hh3p" value="C'">
+            </div>
+            <div class="point-input">
+                <label for="hh3q">Điểm thứ tư ở đỉnh:</label>
+                <input type="text" id="hh3q" value="D'">
+            </div>
+        </div>
+
+        <!-- Khối nón -->
+        <div id="khoi_non" class="form-container">
+            <h3>Khối nón</h3>
+            <div class="point-input">
+                <label for="hnr">Bán kính đáy:</label>
+                <input type="text" id="hnr" value="3">
+            </div>
+            <div class="point-input">
+                <label for="hnh">Chiều cao khối nón:</label>
+                <input type="text" id="hnh" value="4">
+            </div>
+        </div>
+
+        <!-- Khối trụ -->
+        <div id="khoi_tru" class="form-container">
+            <h3>Khối trụ</h3>
+            <div class="point-input">
+                <label for="htr">Bán kính đáy:</label>
+                <input type="text" id="htr" value="3">
+            </div>
+            <div class="point-input">
+                <label for="hth">Chiều cao khối trụ:</label>
+                <input type="text" id="hth" value="5">
+            </div>
+        </div>
+
+        <!-- Khối cầu -->
+        <div id="khoi_cau" class="form-container">
+            <h3>Khối cầu</h3>
+            <div class="point-input">
+                <label for="hcr">Bán kính khối cầu:</label>
+                <input type="text" id="hcr" value="3">
+            </div>
+        </div>
         
         <div class="form-actions">
-            <button id="generate-button" class="action-button">Xuất code</button>
+            <button id="generate-button" class="action-button" style="display: none;">Xuất code</button>
         </div>
 
         <div id="result" class="result-container">
@@ -140,6 +557,272 @@
     <a href="/" class="back-link">Quay lại trang chính</a>
 
     <script>
+        // Function to generate LaTeX code based on shape type
+        function generateLatexCode(shapeType) {
+            let latexCode = '';
+            
+            switch(shapeType) {
+                case 'tu_dien_co_ban':
+                    const tda = document.getElementById('tda').value;
+                    const tdb = document.getElementById('tdb').value;
+                    const tdc = document.getElementById('tdc').value;
+                    const tdd = document.getElementById('tdd').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1,>=stealth, line join=round, line cap=round, line width=1pt]
+    \\foreach \\x/\\y/\\p in {0/0/${tdb},1.3/-1.6/${tdc},4.5/0/${tdd},1/3.5/${tda}}{\\path (\\x,\\y) coordinate (\\p);}
+    \\draw (${tda})--(${tdb})--(${tdc})--(${tdd})--(${tda})--(${tdc});
+    \\draw[dashed, line width=.8pt](${tdb})--(${tdd});
+    \\foreach \\x/\\g in {${tda}/90,${tdb}/-170,${tdc}/-110,${tdd}/-10}\\draw[fill=white] (\\x) circle (.045)+(\\g:.3) node[black]{$\\x$};
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'chop_tam_giac_1':
+                    const tg1s = document.getElementById('tg1s').value;
+                    const tg1a = document.getElementById('tg1a').value;
+                    const tg1b = document.getElementById('tg1b').value;
+                    const tg1c = document.getElementById('tg1c').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1,>=stealth, line join=round, line cap=round, line width=1pt]
+    \\foreach \\x/\\y/\\p in {0/0/${tg1a},1.2/-1.5/${tg1b},4/0/${tg1c}}{\\path (\\x,\\y) coordinate (\\p);}
+    \\path ($(${tg1a})+(0,3)$) coordinate (${tg1s});
+    \\draw (${tg1s})--(${tg1a})--(${tg1b})--(${tg1c})--(${tg1s})--(${tg1b});
+    \\draw[dashed, line width=.8pt](${tg1a})--(${tg1c});
+    \\foreach \\x/\\g in {${tg1a}/-170,${tg1b}/-110,${tg1c}/-10,${tg1s}/90}\\draw[fill=white] (\\x) circle (.045)+(\\g:.3) node[black]{$\\x$};
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'chop_tam_giac_2':
+                    const tg2s = document.getElementById('tg2s').value;
+                    const tg2a = document.getElementById('tg2a').value;
+                    const tg2b = document.getElementById('tg2b').value;
+                    const tg2c = document.getElementById('tg2c').value;
+                    const tg2g = document.getElementById('tg2g').value;
+                    const tg2m = document.getElementById('tg2m').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1,>=stealth, line join=round, line cap=round, line width=1pt]
+    \\foreach \\x/\\y/\\p in {0/0/${tg2a},1.2/-1.6/${tg2b},4.5/0/${tg2c}}{\\path (\\x,\\y) coordinate (\\p);}
+    \\path ($(${tg2b})!1/2!(${tg2c})$) coordinate (${tg2m})
+    ($(${tg2a})!2/3!(${tg2m})$) coordinate (${tg2g})
+    ($(${tg2g})+(0,3.5)$) coordinate(${tg2s});
+    \\draw (${tg2s})--(${tg2a})--(${tg2b})--(${tg2c})--cycle (${tg2s})--(${tg2b});
+    \\draw[dashed, line width=.8pt] (${tg2m})--(${tg2a})--(${tg2c}) (${tg2s})--(${tg2g});
+    \\foreach \\x/\\g in {${tg2a}/-170,${tg2b}/-110,${tg2c}/-10,${tg2s}/90,${tg2g}/-90,${tg2m}/-30}\\draw[fill=white] (\\x) circle (.045)+(\\g:.3) node[black]{$\\x$};
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'chop_tam_giac_3':
+                    const tg3s = document.getElementById('tg3s').value;
+                    const tg3a = document.getElementById('tg3a').value;
+                    const tg3b = document.getElementById('tg3b').value;
+                    const tg3c = document.getElementById('tg3c').value;
+                    const tg3h = document.getElementById('tg3h').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1,>=stealth, line join=round, line cap=round, line width=1pt]
+    \\foreach \\x/\\y/\\p in {0/0/${tg3b},1/-1.5/${tg3a},4/0/${tg3c}}{\\path (\\x,\\y) coordinate (\\p);}
+    \\path ($(${tg3b})!1/2!(${tg3c})$) coordinate (${tg3h})
+    ($(${tg3h})+(0,3.5)$) coordinate (${tg3s});
+    \\draw (${tg3s})--(${tg3b})--(${tg3a})--(${tg3c})--(${tg3s})--(${tg3a});
+    \\draw[dashed, line width=.8pt] (${tg3s})--(${tg3h}) (${tg3b})--(${tg3c});
+    \\foreach \\x/\\g in {${tg3a}/-110,${tg3b}/-170,${tg3c}/-10,${tg3s}/90,${tg3h}/-90}\\draw[fill=white] (\\x) circle (.045)+(\\g:.3) node[black]{$\\x$};
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'chop_tu_giac_1':
+                    const tug1s = document.getElementById('tug1s').value;
+                    const tug1a = document.getElementById('tug1a').value;
+                    const tug1b = document.getElementById('tug1b').value;
+                    const tug1c = document.getElementById('tug1c').value;
+                    const tug1d = document.getElementById('tug1d').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1,>=stealth, line join=round, line cap=round, line width=1pt]
+    \\foreach \\x/\\y/\\p in {0/0/${tug1a},-1.4/-1.6/${tug1b},2.5/-1.6/${tug1c}}{\\path (\\x,\\y) coordinate (\\p);}
+    \\path ($(${tug1a})+(${tug1c})-(${tug1b})$) coordinate (${tug1d})
+    ($(${tug1a})+(0,3.5)$) coordinate (${tug1s});
+    \\draw (${tug1s})--(${tug1b})--(${tug1c})--(${tug1d})--(${tug1s})--(${tug1c});
+    \\draw[dashed, line width=.8pt] (${tug1a})--(${tug1s})(${tug1b})--(${tug1a})--(${tug1d});
+    \\foreach \\x/\\g in {${tug1a}/-85,${tug1b}/-110,${tug1c}/-30,${tug1s}/90,${tug1d}/-10}\\draw[fill=white] (\\x) circle (.045)+(\\g:.3) node[black]{$\\x$};
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'chop_tu_giac_2':
+                    const tug2s = document.getElementById('tug2s').value;
+                    const tug2a = document.getElementById('tug2a').value;
+                    const tug2b = document.getElementById('tug2b').value;
+                    const tug2c = document.getElementById('tug2c').value;
+                    const tug2d = document.getElementById('tug2d').value;
+                    const tug2g = document.getElementById('tug2g').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1,>=stealth, line join=round, line cap=round, line width=1pt]
+    \\foreach \\x/\\y/\\p in {0/0/${tug2a},-1.4/-1.6/${tug2b},2.5/-1.6/${tug2c}}{\\path (\\x,\\y) coordinate (\\p);}
+    \\path ($(${tug2a})+(${tug2c})-(${tug2b})$) coordinate (${tug2d})
+    (intersection of ${tug2a}--${tug2c} and ${tug2b}--${tug2d}) coordinate (${tug2g})
+    ($(${tug2g})+(0,3.5)$) coordinate (${tug2s});
+    \\draw (${tug2s})--(${tug2b})--(${tug2c})--(${tug2d})--(${tug2s})--(${tug2c});
+    \\draw[dashed, line width=.8pt] (${tug2c})--(${tug2a})--(${tug2s}) (${tug2b})--(${tug2a})--(${tug2d})--cycle (${tug2s})--(${tug2g});
+    \\foreach \\x/\\g in {${tug2a}/-85,${tug2b}/-110,${tug2c}/-30,${tug2s}/90,${tug2d}/-10,${tug2g}/-90}\\draw[fill=white] (\\x) circle (.045)+(\\g:.3) node[black]{$\\x$};
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'chop_tu_giac_3':
+                    const tug3s = document.getElementById('tug3s').value;
+                    const tug3a = document.getElementById('tug3a').value;
+                    const tug3b = document.getElementById('tug3b').value;
+                    const tug3c = document.getElementById('tug3c').value;
+                    const tug3d = document.getElementById('tug3d').value;
+                    const tug3h = document.getElementById('tug3h').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1,>=stealth, line join=round, line cap=round, line width=1pt]
+    \\foreach \\x/\\y/\\p in {0/0/${tug3a},-1.4/-1.6/${tug3b},2.5/-1.6/${tug3c}}{\\path (\\x,\\y) coordinate (\\p);}
+    \\path ($(${tug3a})+(${tug3c})-(${tug3b})$) coordinate (${tug3d})
+    ($(${tug3a})!1/2!(${tug3b})$) coordinate (${tug3h})
+    ($(${tug3h})+(0,3.5)$) coordinate (${tug3s});
+    \\draw (${tug3s})--(${tug3b})--(${tug3c})--(${tug3d})--(${tug3s})--(${tug3c});
+    \\draw[dashed, line width=.8pt] (${tug3a})--(${tug3s})--(${tug3h}) (${tug3b})--(${tug3a})--(${tug3d});
+    \\foreach \\x/\\g in {${tug3a}/170,${tug3b}/-110,${tug3c}/-30,${tug3s}/90,${tug3d}/-10,${tug3h}/-60}\\draw[fill=white] (\\x) circle (.045)+(\\g:.3) node[black]{$\\x$};
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'lang_tru_dung':
+                    const lt1a = document.getElementById('lt1a').value;
+                    const lt1b = document.getElementById('lt1b').value;
+                    const lt1c = document.getElementById('lt1c').value;
+                    const lt1m = document.getElementById('lt1m').value;
+                    const lt1n = document.getElementById('lt1n').value;
+                    const lt1p = document.getElementById('lt1p').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1,>=stealth, line join=round, line cap=round, line width=1pt]
+    \\foreach \\x/\\y/\\p in {0/0/${lt1a},1.1/-1.5/${lt1b},3.5/0/${lt1c}}{\\path (\\x,\\y) coordinate (\\p);}
+    \\path ($(${lt1a})+(0,3.2)$) coordinate (${lt1m});
+    \\foreach \\x/\\y in {${lt1b}/${lt1n},${lt1c}/${lt1p}}{\\path ($(${lt1m})+(\\x)-(${lt1a})$) coordinate (\\y);}
+    \\draw (${lt1a})--(${lt1b})--(${lt1c})--(${lt1p})--(${lt1n})--(${lt1m})--cycle (${lt1m})--(${lt1p}) (${lt1b})--(${lt1n});
+    \\draw[dashed, line width=.8pt](${lt1a})--(${lt1c});
+    \\foreach \\x/\\g in {${lt1a}/-170,${lt1b}/-110,${lt1c}/-10,${lt1m}/170,${lt1n}/80,${lt1p}/10}\\draw[fill=white] (\\x) circle (.045)+(\\g:.3) node[black]{$\\x$};
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'lang_tru_xien':
+                    const lt2a = document.getElementById('lt2a').value;
+                    const lt2b = document.getElementById('lt2b').value;
+                    const lt2c = document.getElementById('lt2c').value;
+                    const lt2m = document.getElementById('lt2m').value;
+                    const lt2n = document.getElementById('lt2n').value;
+                    const lt2p = document.getElementById('lt2p').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1,>=stealth, line join=round, line cap=round, line width=1pt]
+    \\foreach \\x/\\y/\\p in {0/0/${lt2a},1.1/-1.5/${lt2b},3.5/0/${lt2c}}{\\path (\\x,\\y) coordinate (\\p);}
+    \\path ($(${lt2a})+(0.7,3.2)$) coordinate (${lt2m});
+    \\foreach \\x/\\y in {${lt2b}/${lt2n},${lt2c}/${lt2p}}{\\path ($(${lt2m})+(\\x)-(${lt2a})$) coordinate (\\y);}
+    \\draw (${lt2a})--(${lt2b})--(${lt2c})--(${lt2p})--(${lt2n})--(${lt2m})--cycle (${lt2m})--(${lt2p}) (${lt2b})--(${lt2n});
+    \\draw[dashed, line width=.8pt](${lt2a})--(${lt2c});
+    \\foreach \\x/\\g in {${lt2a}/-170,${lt2b}/-110,${lt2c}/-10,${lt2m}/170,${lt2n}/80,${lt2p}/10}\\draw[fill=white] (\\x) circle (.045)+(\\g:.3) node[black]{$\\x$};
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'hinh_hop_cn':
+                    const hh1a = document.getElementById('hh1a').value;
+                    const hh1b = document.getElementById('hh1b').value;
+                    const hh1c = document.getElementById('hh1c').value;
+                    const hh1d = document.getElementById('hh1d').value;
+                    const hh1m = document.getElementById('hh1m').value;
+                    const hh1n = document.getElementById('hh1n').value;
+                    const hh1p = document.getElementById('hh1p').value;
+                    const hh1q = document.getElementById('hh1q').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1,>=stealth, line join=round, line cap=round, line width=1pt]
+    \\foreach \\x/\\y/\\p in {0/0/${hh1a},-1.1/-1.5/${hh1b},2.5/-1.5/${hh1c}}{\\path (\\x,\\y) coordinate (\\p);}
+    \\path ($(${hh1a})+(${hh1c})-(${hh1b})$) coordinate (${hh1d})
+    ($(${hh1a})+(0,3.2)$) coordinate (${hh1m});
+    \\foreach \\x/\\y in {${hh1b}/${hh1n},${hh1c}/${hh1p},${hh1d}/${hh1q}}{\\path ($(${hh1m})+(\\x)-(${hh1a})$) coordinate (\\y);}
+    \\draw (${hh1c})--(${hh1p}) (${hh1n})--(${hh1m})--(${hh1q})--(${hh1p})--(${hh1n})--(${hh1b})--(${hh1c})--(${hh1d})--(${hh1q});
+    \\draw[dashed, line width=.8pt] (${hh1m})--(${hh1a})--(${hh1d})(${hh1a})--(${hh1b});
+    \\foreach \\x/\\g in {${hh1a}/-170,${hh1b}/-120,${hh1c}/-50,${hh1d}/-10,${hh1m}/170,${hh1n}/-145,${hh1p}/-30,${hh1q}/10}\\draw[fill=white] (\\x) circle (.045)+(\\g:.3) node[black]{$\\x$};
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'hinh_hop_thuong':
+                    const hh2a = document.getElementById('hh2a').value;
+                    const hh2b = document.getElementById('hh2b').value;
+                    const hh2c = document.getElementById('hh2c').value;
+                    const hh2d = document.getElementById('hh2d').value;
+                    const hh2m = document.getElementById('hh2m').value;
+                    const hh2n = document.getElementById('hh2n').value;
+                    const hh2p = document.getElementById('hh2p').value;
+                    const hh2q = document.getElementById('hh2q').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1,>=stealth, line join=round, line cap=round, line width=1pt]
+    \\foreach \\x/\\y/\\p in {0/0/${hh2a},-1.1/-1.5/${hh2b},2.5/-1.5/${hh2c}}{\\path (\\x,\\y) coordinate (\\p);}
+    \\path ($(${hh2a})+(${hh2c})-(${hh2b})$) coordinate (${hh2d})
+    ($(${hh2a})+(0.7,3.2)$) coordinate (${hh2m});
+    \\foreach \\x/\\y in {${hh2b}/${hh2n},${hh2c}/${hh2p},${hh2d}/${hh2q}}{\\path ($(${hh2m})+(\\x)-(${hh2a})$) coordinate (\\y);}
+    \\draw (${hh2c})--(${hh2p}) (${hh2n})--(${hh2m})--(${hh2q})--(${hh2p})--(${hh2n})--(${hh2b})--(${hh2c})--(${hh2d})--(${hh2q});
+    \\draw[dashed, line width=.8pt] (${hh2m})--(${hh2a})--(${hh2d})(${hh2a})--(${hh2b});
+    \\foreach \\x/\\g in {${hh2a}/-170,${hh2b}/-120,${hh2c}/-50,${hh2d}/-10,${hh2m}/170,${hh2n}/-145,${hh2p}/-30,${hh2q}/10}\\draw[fill=white] (\\x) circle (.045)+(\\g:.3) node[black]{$\\x$};
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'hinh_lap_phuong':
+                    const hh3a = document.getElementById('hh3a').value;
+                    const hh3b = document.getElementById('hh3b').value;
+                    const hh3c = document.getElementById('hh3c').value;
+                    const hh3d = document.getElementById('hh3d').value;
+                    const hh3m = document.getElementById('hh3m').value;
+                    const hh3n = document.getElementById('hh3n').value;
+                    const hh3p = document.getElementById('hh3p').value;
+                    const hh3q = document.getElementById('hh3q').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1,>=stealth, line join=round, line cap=round, line width=1pt]
+    \\foreach \\x/\\y/\\p in {0/0/${hh3a},-1.1/-1.5/${hh3b},2.5/-1.5/${hh3c}}{\\path (\\x,\\y) coordinate (\\p);}
+    \\path ($(${hh3a})+(${hh3c})-(${hh3b})$) coordinate (${hh3d})
+    ($(${hh3a})+(0,3.2)$) coordinate (${hh3m});
+    \\foreach \\x/\\y in {${hh3b}/${hh3n},${hh3c}/${hh3p},${hh3d}/${hh3q}}{\\path ($(${hh3m})+(\\x)-(${hh3a})$) coordinate (\\y);}
+    \\draw (${hh3c})--(${hh3p}) (${hh3n})--(${hh3m})--(${hh3q})--(${hh3p})--(${hh3n})--(${hh3b})--(${hh3c})--(${hh3d})--(${hh3q});
+    \\draw[dashed, line width=.8pt] (${hh3m})--(${hh3a})--(${hh3d})(${hh3a})--(${hh3b});
+    \\foreach \\x/\\g in {${hh3a}/-170,${hh3b}/-120,${hh3c}/-50,${hh3d}/-10,${hh3m}/170,${hh3n}/-145,${hh3p}/-30,${hh3q}/10}\\draw[fill=white] (\\x) circle (.045)+(\\g:.3) node[black]{$\\x$};
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'khoi_non':
+                    const hnr = document.getElementById('hnr').value;
+                    const hnh = document.getElementById('hnh').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1, line join=round, line cap=round, line width=1pt]
+    \\def\\h{${hnh}}
+    \\def\\R{${hnr}}
+    \\pgfmathsetmacro\\r{0.45*\\R}
+    \\pgfmathsetmacro\\g{asin(\\r/\\h)}
+    \\pgfmathsetmacro\\xo{\\R*cos(\\g)}
+    \\pgfmathsetmacro\\yo{\\r*sin(\\g)}
+    \\path (0,0) coordinate (O)
+    (0,\\h) coordinate (S)
+    (180:\\R) coordinate (A)
+    (0:\\R) coordinate (B);
+    \\draw[dashed, line width=.8pt](\\xo,\\yo) arc (\\g:180-\\g:{\\R} and {\\r}) (A)--(B) (O)--(S);
+    \\draw (S)--(-\\xo,\\yo) arc (180-\\g:360+\\g:{\\R} and {\\r})--(S);
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'khoi_tru':
+                    const htr = document.getElementById('htr').value;
+                    const hth = document.getElementById('hth').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1, line join=round, line cap=round, line width=1pt]
+    \\def\\h{${hth}}
+    \\def\\R{${htr}}
+    \\pgfmathsetmacro\\r{0.45*\\R}
+    \\path (0,0) coordinate (O)
+    (0,\\h) coordinate (O')
+    (180:\\R) coordinate (A)
+    (0:\\R) coordinate (B)
+    ($(B)+(O')$) coordinate (C)
+    ($(A)+(O')$) coordinate (D);
+    \\draw[dashed, line width=.8pt] (B) arc (0:180:{\\R} and {\\r});
+    \\draw (O') ellipse ({\\R} and {\\r}) (C)--(B) arc (0:-180:{\\R} and {\\r})--(D);
+\\end{tikzpicture}`;
+                    break;
+                    
+                case 'khoi_cau':
+                    const hcr = document.getElementById('hcr').value;
+                    latexCode = `\\begin{tikzpicture}[scale=1, line join=round, line cap=round, line width=1pt]
+    \\def\\R{${hcr}}
+    \\pgfmathsetmacro\\r{0.45*\\R}
+    \\path (0,0) coordinate (O)
+    (180:\\R) coordinate (A)
+    (0:\\R) coordinate (B);
+    \\draw[dashed, line width=.8pt] (B) arc (0:180:{\\R} and {\\r});
+    \\draw (O) circle (\\R) (B) arc (0:-180:{\\R} and {\\r});
+\\end{tikzpicture}`;
+                    break;
+            }
+            
+            return latexCode;
+        }
+
         // Show the appropriate form based on the selection
         document.getElementById('shape-type').addEventListener('change', function() {
             // Hide all forms
@@ -155,6 +838,9 @@
                     selectedForm.classList.add('active');
                 }
             }
+            
+            // Show/hide generate button based on selection
+            document.getElementById('generate-button').style.display = selectedValue ? 'block' : 'none';
         });
         
         // Generate the LaTeX code
@@ -166,66 +852,10 @@
                 return;
             }
             
-            // Collect form data based on shape type
-            let data = { type: '' };
+            const latexCode = generateLatexCode(shapeType);
             
-            if (shapeType === 'tu_dien_co_ban') {
-                data = {
-                    type: 'tu_dien_co_ban',
-                    tda: document.getElementById('tda').value,
-                    tdb: document.getElementById('tdb').value,
-                    tdc: document.getElementById('tdc').value,
-                    tdd: document.getElementById('tdd').value
-                };
-            } else if (shapeType === 'chop_tam_giac_1') {
-                data = {
-                    type: 'chop_tam_giac',
-                    chop_type: 'loai_mot',
-                    tg1s: document.getElementById('tg1s').value,
-                    tg1a: document.getElementById('tg1a').value,
-                    tg1b: document.getElementById('tg1b').value,
-                    tg1c: document.getElementById('tg1c').value
-                };
-            } else if (shapeType === 'chop_tam_giac_2') {
-                data = {
-                    type: 'chop_tam_giac',
-                    chop_type: 'loai_hai',
-                    tg2s: document.getElementById('tg2s').value,
-                    tg2a: document.getElementById('tg2a').value,
-                    tg2b: document.getElementById('tg2b').value,
-                    tg2c: document.getElementById('tg2c').value,
-                    tg2g: document.getElementById('tg2g').value,
-                    tg2m: document.getElementById('tg2m').value
-                };
-            }
-            // Add other shape types similarly
-            
-            // Show loading indicator
-            document.getElementById('latex-code').textContent = 'Đang xử lý...';
-            
-            // Send to server
-            fetch('/hkg', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    document.getElementById('latex-code').textContent = data.latex;
-                    document.getElementById('copy-button').style.display = 'block';
-                } else {
-                    document.getElementById('latex-code').textContent = 'Lỗi: ' + data.message;
-                    document.getElementById('copy-button').style.display = 'none';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('latex-code').textContent = 'Đã xảy ra lỗi khi tạo mẫu hình';
-                document.getElementById('copy-button').style.display = 'none';
-            });
+            document.getElementById('latex-code').textContent = latexCode;
+            document.getElementById('copy-button').style.display = 'block';
         });
         
         // Copy button functionality
@@ -240,7 +870,7 @@
             document.execCommand('copy');
             document.body.removeChild(textarea);
             
-            alert('Đã sao chép vào clipboard!');
+            alert('Đã sao chép mã LaTeX vào clipboard!');
         });
     </script>
 </body>
