@@ -4,9 +4,12 @@ import platform
 import subprocess
 import requests
 import sys
+import time
+import hashlib
+import json
 from flask import Flask, request, render_template, jsonify, session, redirect, url_for
 from werkzeug.utils import secure_filename
-import json
+from functools import wraps
 
 # Import web-adapted modules
 from modules.bbt_web import generate_bbt_bac_nhat, generate_bbt_bac_hai, generate_bbt_bac_ba, generate_bbt_trung_phuong, generate_bbt_mot_mot, generate_bbt_hai_mot
@@ -23,7 +26,90 @@ app.secret_key = os.urandom(24)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# Hardware identification functions
+# URL của file users.json và check-convert trên GitHub
+USERS_FILE_URL = "https://raw.githubusercontent.com/thayphuctoan/pconvert/refs/heads/main/user.json"
+ACTIVATION_FILE_URL = "https://raw.githubusercontent.com/thayphuctoan/pconvert/main/check-convert"
+
+# Cache các dữ liệu từ GitHub
+users_cache = {"data": None, "timestamp": 0}
+activation_cache = {"data": None, "timestamp": 0}
+
+# ------------------------------ Authentication Functions ------------------------------
+def get_users():
+    """Lấy danh sách người dùng từ GitHub với cache 5 phút"""
+    current_time = time.time()
+    if users_cache["data"] is None or current_time - users_cache["timestamp"] > 300:
+        try:
+            response = requests.get(USERS_FILE_URL)
+            if response.status_code == 200:
+                users_cache["data"] = json.loads(response.text)
+                users_cache["timestamp"] = current_time
+                return users_cache["data"]
+            else:
+                return {}
+        except Exception as e:
+            print(f"Lỗi khi lấy danh sách người dùng: {str(e)}")
+            return {}
+    return users_cache["data"]
+
+def get_activated_ids():
+    """Lấy danh sách ID đã kích hoạt từ GitHub với cache 5 phút"""
+    current_time = time.time()
+    if activation_cache["data"] is None or current_time - activation_cache["timestamp"] > 300:
+        try:
+            response = requests.get(ACTIVATION_FILE_URL)
+            if response.status_code == 200:
+                activation_cache["data"] = response.text.strip().split('\n')
+                activation_cache["timestamp"] = current_time
+                return activation_cache["data"]
+            else:
+                return []
+        except Exception as e:
+            print(f"Lỗi khi lấy danh sách ID kích hoạt: {str(e)}")
+            return []
+    return activation_cache["data"]
+
+def authenticate_user(username, password):
+    """Xác thực người dùng"""
+    users = get_users()
+    if username in users and users[username] == password:
+        return True
+    return False
+
+def generate_hardware_id(username):
+    """Tạo hardware ID cố định từ username"""
+    hardware_id = hashlib.md5(username.encode()).hexdigest().upper()
+    formatted_id = '-'.join([hardware_id[i:i+8] for i in range(0, len(hardware_id), 8)])
+    return formatted_id + "-Premium"
+
+def check_activation(hardware_id):
+    """Kiểm tra kích hoạt"""
+    activated_ids = get_activated_ids()
+    return hardware_id in activated_ids
+
+def login_required(f):
+    """Decorator yêu cầu đăng nhập"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logged_in' not in session or not session['logged_in']:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def activation_required(f):
+    """Decorator yêu cầu kích hoạt"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logged_in' not in session or not session['logged_in']:
+            return redirect(url_for('login'))
+        
+        if 'activation_status' not in session or session['activation_status'] != "ĐÃ KÍCH HOẠT":
+            return redirect(url_for('activation_status'))
+            
+        return f(*args, **kwargs)
+    return decorated_function
+
+# ------------------------------ Hardware identification functions ------------------------------
 def get_mac_address():
     """Get the MAC address of the current machine."""
     mac = ':'.join(['{:02x}'.format((uuid.getnode() >> i) & 0xff) for i in range(0, 2*6, 8)][::-1])
@@ -97,64 +183,256 @@ def check_license(license_code):
         print(f"Error checking license: {e}")
         return False
 
-# Registration check middleware
+# ------------------------------ Authentication/Authorization Middleware ------------------------------
 @app.before_request
-def check_registration():
-    # Paths that don't require registration
-    exempt_paths = ['/', '/register', '/static', '/check_registration', '/system_info']
+def check_auth():
+    # Paths that don't require authentication
+    auth_exempt_paths = ['/login', '/register', '/api/login', '/api/register', 
+                         '/static', '/check_activation', '/system_info']
     
-    # Check if path is exempt
-    for path in exempt_paths:
+    # Check if path is exempt from authentication
+    for path in auth_exempt_paths:
         if request.path.startswith(path):
             return None
     
-    # Check if registered for other paths
-    if not session.get('is_registered', False):
+    # Check if logged in for other paths
+    if 'logged_in' not in session or not session['logged_in']:
         if request.content_type == 'application/json':
-            return jsonify({'status': 'error', 'message': 'Bạn cần đăng kí bản quyền để sử dụng chức năng này'}), 403
+            return jsonify({'status': 'error', 'message': 'Bạn cần đăng nhập để sử dụng chức năng này'}), 401
         else:
-            return redirect(url_for('register'))
+            return redirect(url_for('login'))
+    
+    # Check activation for paths that require it
+    activation_exempt_paths = ['/activation_status', '/api/activation-status', '/api/check-activation']
+    if not any(request.path.startswith(path) for path in activation_exempt_paths):
+        if 'activation_status' not in session or session['activation_status'] != "ĐÃ KÍCH HOẠT":
+            if request.content_type == 'application/json':
+                return jsonify({'status': 'error', 'message': 'Bạn cần kích hoạt phần mềm để sử dụng chức năng này'}), 403
+            else:
+                return redirect(url_for('activation_status'))
 
-# Main routes
-@app.route('/')
-def index():
-    return render_template('index.html')
+# ------------------------------ Authentication Routes ------------------------------
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        if request.content_type == 'application/json':
+            data = request.json
+            username = data.get('username')
+            password = data.get('password')
+        else:
+            username = request.form.get('username')
+            password = request.form.get('password')
+        
+        if authenticate_user(username, password):
+            session['logged_in'] = True
+            session['username'] = username
+            
+            # Kiểm tra kích hoạt
+            hardware_id = generate_hardware_id(username)
+            session['hardware_id'] = hardware_id
+            
+            if check_activation(hardware_id):
+                session['activation_status'] = "ĐÃ KÍCH HOẠT"
+                if request.content_type == 'application/json':
+                    return jsonify({"success": True, "activated": True})
+                else:
+                    return redirect(url_for('index'))
+            else:
+                session['activation_status'] = "CHƯA KÍCH HOẠT"
+                if request.content_type == 'application/json':
+                    return jsonify({"success": True, "activated": False})
+                else:
+                    return redirect(url_for('activation_status'))
+        else:
+            if request.content_type == 'application/json':
+                return jsonify({"success": False, "message": "Tên đăng nhập hoặc mật khẩu không đúng"})
+            else:
+                return render_template('login.html', error="Tên đăng nhập hoặc mật khẩu không đúng")
+    
+    return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         if request.content_type == 'application/json':
-            license_code = request.json.get('license_code')
+            data = request.json
+            username = data.get('username')
+            password = data.get('password')
+            email = data.get('email')
         else:
-            license_code = request.form.get('license_code')
-            
-        is_registered = check_license(license_code)
-        if is_registered:
-            session['is_registered'] = True
+            username = request.form.get('username')
+            password = request.form.get('password')
+            email = request.form.get('email')
+        
+        users = get_users()
+        if username in users:
             if request.content_type == 'application/json':
-                return jsonify({'status': 'success', 'message': 'Đã đăng kí thành công'})
+                return jsonify({"success": False, "message": "Tên đăng nhập đã tồn tại"})
             else:
-                return redirect(url_for('index'))
+                return render_template('register.html', error="Tên đăng nhập đã tồn tại")
+        
+        # Trong môi trường thực tế, bạn sẽ cần một cơ chế để cập nhật file users.json
+        # Ở đây chúng ta giả định là đã đăng ký thành công
+        
+        hardware_id = generate_hardware_id(username)
+        
+        if request.content_type == 'application/json':
+            return jsonify({
+                "success": True,
+                "message": "Đăng ký thành công! Vui lòng liên hệ với nhà cung cấp để kích hoạt.",
+                "hardwareId": hardware_id
+            })
         else:
-            if request.content_type == 'application/json':
-                return jsonify({'status': 'error', 'message': 'Mã bản quyền không hợp lệ'})
-            else:
-                return render_template('register.html', error='Mã bản quyền không hợp lệ')
+            return render_template('register.html', 
+                                success="Đăng ký thành công! Vui lòng liên hệ với nhà cung cấp để kích hoạt.",
+                                hardware_id=hardware_id)
     
     return render_template('register.html')
 
-@app.route('/check_registration')
-def check_registration_status():
-    is_registered = session.get('is_registered', False)
-    return jsonify({'is_registered': is_registered})
+@app.route('/activation_status')
+@login_required
+def activation_status():
+    username = session.get('username')
+    hardware_id = session.get('hardware_id')
+    activation_status = session.get('activation_status')
+    
+    # Kiểm tra lại trạng thái kích hoạt mỗi khi vào trang này
+    if hardware_id and check_activation(hardware_id):
+        session['activation_status'] = "ĐÃ KÍCH HOẠT"
+        activation_status = "ĐÃ KÍCH HOẠT"
+    
+    return render_template('activation.html', 
+                          username=username,
+                          hardware_id=hardware_id,
+                          activation_status=activation_status)
+
+@app.route('/check_activation')
+@login_required
+def check_activation_route():
+    hardware_id = session.get('hardware_id')
+    
+    if hardware_id and check_activation(hardware_id):
+        session['activation_status'] = "ĐÃ KÍCH HOẠT"
+        return redirect(url_for('index'))
+    else:
+        session['activation_status'] = "CHƯA KÍCH HOẠT"
+        return redirect(url_for('activation_status'))
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+# ------------------------------ API Authentication Routes ------------------------------
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+    
+    if authenticate_user(username, password):
+        session['logged_in'] = True
+        session['username'] = username
+        
+        # Kiểm tra kích hoạt
+        hardware_id = generate_hardware_id(username)
+        session['hardware_id'] = hardware_id
+        
+        if check_activation(hardware_id):
+            session['activation_status'] = "ĐÃ KÍCH HOẠT"
+            activated = True
+        else:
+            session['activation_status'] = "CHƯA KÍCH HOẠT"
+            activated = False
+        
+        return jsonify({"success": True, "activated": activated})
+    else:
+        return jsonify({"success": False, "message": "Tên đăng nhập hoặc mật khẩu không đúng"})
+
+@app.route('/api/register', methods=['POST'])
+def api_register():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+    email = data.get('email')
+    
+    users = get_users()
+    if username in users:
+        return jsonify({"success": False, "message": "Tên đăng nhập đã tồn tại"})
+    
+    # Trong môi trường thực tế, bạn sẽ cần một cơ chế để cập nhật file users.json
+    # Ở đây chúng ta giả định là đã đăng ký thành công
+    
+    hardware_id = generate_hardware_id(username)
+    
+    return jsonify({
+        "success": True,
+        "message": "Đăng ký thành công! Vui lòng liên hệ với nhà cung cấp để kích hoạt.",
+        "hardwareId": hardware_id
+    })
+
+@app.route('/api/activation-status')
+def api_activation_status():
+    if 'logged_in' not in session or not session['logged_in']:
+        return jsonify({"error": "Unauthorized", "message": "Bạn cần đăng nhập trước"}), 401
+    
+    username = session.get('username')
+    hardware_id = session.get('hardware_id')
+    
+    # Kiểm tra lại trạng thái kích hoạt
+    activated = False
+    if hardware_id and check_activation(hardware_id):
+        session['activation_status'] = "ĐÃ KÍCH HOẠT"
+        activated = True
+    else:
+        session['activation_status'] = "CHƯA KÍCH HOẠT"
+    
+    return jsonify({
+        "username": username,
+        "hardwareId": hardware_id,
+        "activated": activated
+    })
+
+@app.route('/api/check-activation')
+def api_check_activation():
+    if 'logged_in' not in session or not session['logged_in']:
+        return jsonify({"error": "Unauthorized", "message": "Bạn cần đăng nhập trước"}), 401
+    
+    hardware_id = session.get('hardware_id')
+    
+    activated = False
+    if hardware_id and check_activation(hardware_id):
+        session['activation_status'] = "ĐÃ KÍCH HOẠT"
+        activated = True
+    else:
+        session['activation_status'] = "CHƯA KÍCH HOẠT"
+    
+    return jsonify({"activated": activated})
+
+# ------------------------------ Main routes ------------------------------
+@app.route('/')
+def index():
+    if 'logged_in' not in session or not session['logged_in']:
+        return redirect(url_for('login'))
+        
+    if 'activation_status' not in session or session['activation_status'] != "ĐÃ KÍCH HOẠT":
+        return redirect(url_for('activation_status'))
+        
+    return render_template('index.html')
 
 @app.route('/system_info')
 def system_info_route():
+    # Trả về ID phần cứng từ session nếu đã đăng nhập
+    if 'logged_in' in session and session['logged_in'] and 'hardware_id' in session:
+        return jsonify({"system_info": session['hardware_id']})
+    
+    # Nếu chưa đăng nhập, trả về thông tin hệ thống thông thường
     info = get_system_info()
     return jsonify({"system_info": info})
 
-# BBT routes
+# ------------------------------ BBT routes ------------------------------
 @app.route('/bbt_auto', methods=['GET', 'POST'])
+@activation_required
 def bbt_auto():
     if request.method == 'POST':
         data = request.json
@@ -201,6 +479,7 @@ def bbt_auto():
     return render_template('bbt_auto.html')
 
 @app.route('/bbt_manual', methods=['GET', 'POST'])
+@activation_required
 def bbt_manual():
     if request.method == 'POST':
         data = request.json
@@ -209,8 +488,9 @@ def bbt_manual():
     
     return render_template('bbt_manual.html')
 
-# Graph routes
+# ------------------------------ Graph routes ------------------------------
 @app.route('/graph_standard', methods=['GET', 'POST'])
+@activation_required
 def graph_standard():
     if request.method == 'POST':
         data = request.json
@@ -257,6 +537,7 @@ def graph_standard():
     return render_template('graph_standard.html')
 
 @app.route('/graph_custom', methods=['GET', 'POST'])
+@activation_required
 def graph_custom():
     if request.method == 'POST':
         data = request.json
@@ -265,8 +546,9 @@ def graph_custom():
     
     return render_template('graph_custom.html')
 
-# Conversion routes
+# ------------------------------ Conversion routes ------------------------------
 @app.route('/convert_ex', methods=['GET', 'POST'])
+@activation_required
 def convert_ex():
     if request.method == 'POST':
         text = request.json.get('text', '')
@@ -276,6 +558,7 @@ def convert_ex():
     return render_template('convert_ex.html')
 
 @app.route('/convert_extf', methods=['GET', 'POST'])
+@activation_required
 def convert_extf():
     if request.method == 'POST':
         text = request.json.get('text', '')
@@ -285,6 +568,7 @@ def convert_extf():
     return render_template('convert_extf.html')
 
 @app.route('/convert_bt', methods=['GET', 'POST'])
+@activation_required
 def convert_bt():
     if request.method == 'POST':
         text = request.json.get('text', '')
@@ -294,6 +578,7 @@ def convert_bt():
     return render_template('convert_bt.html')
 
 @app.route('/convert_vd', methods=['GET', 'POST'])
+@activation_required
 def convert_vd():
     if request.method == 'POST':
         text = request.json.get('text', '')
@@ -303,6 +588,7 @@ def convert_vd():
     return render_template('convert_vd.html')
 
 @app.route('/add_true', methods=['GET', 'POST'])
+@activation_required
 def add_true():
     if request.method == 'POST':
         data = request.json
@@ -311,8 +597,9 @@ def add_true():
     
     return render_template('add_true.html')
 
-# HKG routes
+# ------------------------------ HKG routes ------------------------------
 @app.route('/hkg', methods=['GET', 'POST'])
+@activation_required
 def hkg():
     if request.method == 'POST':
         data = request.json
