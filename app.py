@@ -627,12 +627,10 @@ def hkg():
     return render_template('hkg.html')
 
 if __name__ == '__main__':
-    # Check if running on render.com
-    is_production = os.environ.get('RENDER', False)
-    if is_production:
-        # Running in production on render.com
-        port = int(os.environ.get('PORT', 10000))
-        app.run(host='0.0.0.0', port=port)
-    else:
-        # Running locally for development
+    # Kiểm tra nếu đang chạy trong môi trường phát triển
+    if not os.environ.get('RENDER') and not os.environ.get('FLY_APP_NAME'):
         app.run(debug=True)
+    else:
+        # Khi sử dụng gunicorn, không cần gọi app.run()
+        port = int(os.environ.get('PORT', 8080))
+        app.run(host='0.0.0.0', port=port)
