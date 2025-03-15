@@ -1,7 +1,7 @@
-app = "hlatex" # Bạn có thể thay đổi tên ứng dụng
+app = "hlatex"
 
 [build]
-  builder = "paketobuildpacks/builder:base"
+  dockerfile = "Dockerfile"
 
 [env]
   PORT = "8080"
