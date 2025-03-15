@@ -1,16 +1,8 @@
-app = "hlatex-tool"  # Đổi tên app nếu cần
+app = "hlatex"
 
 [build]
-  dockerfile = "Dockerfile"  # Sử dụng Dockerfile
-
-[env]
-  PORT = "8080"
-  FLY_APP_NAME = "true"
-  PYTHON_VERSION = "3.10.0"
+  dockerfile = "Dockerfile"
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 0
