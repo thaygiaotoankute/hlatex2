@@ -12,4 +12,4 @@ RUN pip install gunicorn
 ENV PORT=8080
 ENV FLY_APP_NAME=true
 
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:8080"]  # Đảm bảo dùng app:app
+CMD ["gunicorn", "main:app", "--bind", "0.0.0.0:8080"]  # Đảm bảo dùng app:app
