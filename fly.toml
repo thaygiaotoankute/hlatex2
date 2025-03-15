@@ -1,7 +1,7 @@
-app = "hlatex"
+app = "hlatex"  # Đổi tên app nếu cần
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = "Dockerfile"  # Sử dụng Dockerfile
 
 [env]
   PORT = "8080"
