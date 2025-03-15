@@ -1,4 +1,4 @@
-app = "hlatex"  # Đổi tên app nếu cần
+app = "hlatex-tool"  # Đổi tên app nếu cần
 
 [build]
   dockerfile = "Dockerfile"  # Sử dụng Dockerfile
